@@ -34,10 +34,9 @@ Investment recommendations using financial, risk and machine learning libraries 
 
 
 ## r libraries:
-QuantMod : quantitative trading models.
-data, charts, indicators  
+QuantMod : quantitative trading models. data, charts, indicators  
 PortfolioAnalytics : portfolio optimization wrt specific user criteria
-PerformanceAnalytics : portfolio returns
+PortfolioAnalytics's PerformanceAnalytics : portfolio returns
 DerivMkts : volatility 
 PeerPerformance : pairwise analysis of held investments vs peers
 Risk : 26 financial risk measures
