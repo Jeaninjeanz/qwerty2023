@@ -8,30 +8,41 @@ Investment recommendations using financial, risk and machine learning libraries 
 3. [ai] produces [recommendations]
 
 ### user request parameters
-- risk level
-- saving goal
-- time period
-- investment history
-- age
-- total time to invest
-- single/portfolio
+- risk level*
+- age*
+- required amount and rate of return*
+- time period*
+- payout preferences (weekly, monthly, yearly, end)*
+- user's investment history
+- single/portfolio*
 
 ### stock variables
+- name *
+- type (stocks, bonds, moneymarket instruments)*
+- company
+- intrinsic value of stock *
+- market value of stock *
+- intrinsic value of company
+- market value of company
 - price/earnings
-- beta
-- dividend history
-- dividend yield
+- beta (systematic risk) *
 - value
 - return on investment
 - return on portfolio
+- historical divended yields
+- historical company pay out ratio
+- industry
+- industry analysis
 
-### recommendation variables
-- stock
-- company
-- sector
-- price
-- holding period return
+### recommendation output
+- stock(s)
+- recommended splits
+- recommended industries
+- risk level
 
+## financial models
+- Relative Evaluation Model : price/earnings (dividend growth rates given)
+- Dividend Discount Model : (current dividend amounts given)
 
 ## r libraries:
 - QuantMod : quantitative trading models. data, charts, indicators  
