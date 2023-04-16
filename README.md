@@ -31,7 +31,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - sector
 - price
 - holding period return
-- 
+
 
 ## r libraries:
 QuantMod : quantitative trading models.
