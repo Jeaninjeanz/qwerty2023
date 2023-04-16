@@ -1,13 +1,13 @@
 # qwerty2023
 Investment recommendations using financial, risk and machine learning libraries in R for the Discovery Gradhack 2023.
 
-##data flow
+## data flow
 
 1. [user] requests [recommendations]
 2. [ai] analyzes [stock] using [user] criteria
 3. [ai] produces [recommendations]
 
-###user request parameters
+### user request parameters
 - risk level
 - saving goal
 - time period
@@ -16,7 +16,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - total time to invest
 - single/portfolio
 
-###stock variables
+### stock variables
 - price/earnings
 - beta
 - dividend history
@@ -25,7 +25,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - return on investment
 - return on portfolio
 
-###recommendation variables
+### recommendation variables
 - stock
 - company
 - sector
@@ -33,7 +33,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - holding period return
 - 
 
-##r libraries:
+## r libraries:
 QuantMod : quantitative trading models.
 - data, charts, indicators  
 PortfolioAnalytics : portfolio optimization wrt specific user criteria
