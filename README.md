@@ -9,7 +9,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
 # TO DO
-- find applicable data 
+- find applicable data as a starting point
 
 # Workplan
 ## Phase 1
