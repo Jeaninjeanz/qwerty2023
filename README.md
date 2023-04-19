@@ -1,6 +1,10 @@
 # qwerty2023
 Investment recommendations using financial, risk and machine learning libraries in R for the Discovery Gradhack 2023.
 
+# PLEASE NOTE
+- create individual branches for any modifications to the code and/or file structure (compartmentalization)
+- team to review and commit any changes made every 4 (?) hours to main branch 
+
 ## data flow
 
 1. [user] requests [recommendations]
