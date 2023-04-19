@@ -3,8 +3,12 @@ Investment recommendations using financial, risk and machine learning libraries 
 
 # PLEASE NOTE
 - create individual branches for any modifications to the code and/or file structure (compartmentalization)
+- commit to main branch for modifications of readme
 - branches can be made of all files directly or editing individual files
 - team to review and commit any changes made every 4 (?) hours to main branch 
+
+# TO DO
+- find applicable data 
 
 # Workplan
 ## Phase 1
@@ -21,13 +25,13 @@ Investment recommendations using financial, risk and machine learning libraries 
 - Additional faf
 
 
-# data flow
+# Data flow
 
 1. [user] requests [recommendations] from [ai]
 2. [ai] analyzes [stock] using [user] criteria
 3. [ai] produces [recommendations] for [user]
 
-## user request parameters
+## User request parameters
 - risk level*
 - age*
 - required amount and rate of return*
@@ -36,7 +40,7 @@ Investment recommendations using financial, risk and machine learning libraries 
 - user's investment history
 - single/portfolio*
 
-## stock variables
+## Stock variables
 - name *
 - type (stocks, bonds, moneymarket instruments)*
 - company
@@ -54,17 +58,17 @@ Investment recommendations using financial, risk and machine learning libraries 
 - industry
 - industry analysis
 
-## recommendation output
+## Recommendation output
 - stock(s)
 - recommended splits
 - recommended industries
 - risk level
 
-# financial models
+# Financial models
 - Relative Evaluation Model : price/earnings (dividend growth rates given)
 - Dividend Discount Model : (current dividend amounts given)
 
-# r libraries:
+# R libraries:
 - QuantMod : quantitative trading models. data, charts, indicators  
 - PortfolioAnalytics : portfolio optimization wrt specific user criteria
 - PortfolioAnalytics's PerformanceAnalytics : portfolio returns
