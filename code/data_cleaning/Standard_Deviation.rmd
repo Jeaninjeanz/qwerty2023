@@ -1,0 +1,64 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r Setup}
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(lubridate)
+
+```
+
+
+```{r}
+sNpData <- read.csv("s&p500Data/all_stocks_5yr.csv")
+```
+
+```{r}
+
+sNpData$date <- ymd(sNpData$date)
+head(sNpData)
+```
+
+SPLITTING DATA INTO 12 MONTHS TO TEST 
+```{r}
+
+threeMonth <- sNpData %>%  filter(date < '2014-02-08') 
+threeMonth
+```
+Finding the average price and creating a column
+```{r}
+#Finding the average price and creating a column
+threeMonth <- threeMonth %>% mutate(averagePrice = (open+close)/2)
+
+threeMonth <- threeMonth %>% 
+  group_by(Name) %>% 
+  mutate(yearAvg = (sum(averagePrice))/365.25)
+threeMonth
+
+```
+
+Calculate the diff in average price, square the diff then sum the values
+```{r}
+threeMonth <- threeMonth %>% 
+  group_by(Name) %>% 
+  mutate(averagePrice = sum(((averagePrice - yearAvg)^2)))
+```
+find the squared varience and standard deviation
+
+```{r}
+#varience 
+threeMonth <- threeMonth %>% 
+  group_by(Name) %>% 
+  mutate(varience = (averagePrice/365.25))
+
+threeMonth
+
+#calculating the standard deviation
+threeMonth <- threeMonth %>% 
+  group_by(Name) %>% 
+  mutate(SD = sqrt(varience))
+threeMonth
+```
