@@ -8,13 +8,14 @@ library(tidyverse)
 library(dplyr)
 library(readr)
 library(lubridate)
+library(ggplot2)
 library(factoextra)
-
+library(caret)
 ```
 
 
 ```{r}
-sNpData <- read.csv("s&p500Data/all_stocks_5yr.csv")
+sNpData <- read.csv("raw_data/all_stocks_5yr.csv")
 ```
 
 ```{r}
@@ -25,8 +26,8 @@ head(sNpData)
 
 SPLITTING DATA INTO 12 MONTHS TO TEST 
 ```{r}
-
-threeMonth <- sNpData %>%  filter(date < '2014-02-08') 
+#filtered to reduce datapoints while testing
+threeMonth <- drop_na(sNpData) 
 threeMonth
 ```
 Finding the average price and creating a column
@@ -36,7 +37,8 @@ threeMonth <- threeMonth %>% mutate(averagePrice = (open+close)/2)
 
 threeMonth <- threeMonth %>% 
   group_by(Name) %>% 
-  mutate(yearAvg = (sum(averagePrice))/365.25)
+  mutate(yearAvg = (sum(averagePrice))/(365.25*5)) %>% 
+  mutate(yearVolumeAvg = (sum(volume))/(365.25*5))
 threeMonth
 
 ```
@@ -45,7 +47,8 @@ Calculate the diff in average price, square the diff then sum the values
 ```{r}
 threeMonth <- threeMonth %>% 
   group_by(Name) %>% 
-  mutate(averagePrice = sum(((averagePrice - yearAvg)^2)))
+  mutate(averagePrice = sum(((averagePrice - yearAvg)^2))) %>% 
+  mutate(averageVolume = sum(((volume - yearVolumeAvg)^2)))
 ```
 find the squared varience and standard deviation
 
@@ -53,24 +56,37 @@ find the squared varience and standard deviation
 #varience 
 threeMonth <- threeMonth %>% 
   group_by(Name) %>% 
-  mutate(varience = (averagePrice/365.25))
+  mutate(varience = (averagePrice/(365.25*5))) %>% 
+  mutate(volumeVarience = (averageVolume/(365.25*5)))
 
 threeMonth
 
 #calculating the standard deviation
 threeMonth <- threeMonth %>% 
   group_by(Name) %>% 
-  mutate(SD = sqrt(varience))
+  mutate(SD = sqrt(varience)) %>% 
+  mutate(SDvolume = sqrt(volumeVarience))
 threeMonth
+
+summary(threeMonth$SDvolume)
 ```
 
 ```{r}
 summary(threeMonth$SD)
 
-threeMonth <- threeMonth %>% 
-  mutate(riskClass = case_when(SD < 9.5 ~ "Low",
-                               SD > 9.5 && SD < 17.75 ~ "Medium",
-                               SD > 17.75 ~ "High")) %>% 
+price_SD_Q1 <- summary(threeMonth$SD)[2]
+price_SD_mean <- summary(threeMonth$SD)[4]
+
+volume_SD_Q1 <- summary(threeMonth$SDvolume)[2]
+volume_SD_mean <- summary(threeMonth$SDvolume)[4]
+
+
+#arbitrarily decided on these ranges to classify the risk
+
+riskData <- threeMonth %>% 
+  mutate(riskClass = case_when(SD < Q1 && SDvolume < volume_SD_Q1 ~ "Low",
+                               SD > Q1 && SD < data_mean && SDvolume < volume_SD_mean ~ "Medium",
+                               SD > data_mean && SDvolume > volume_SD_mean ~ "High")) %>% 
   mutate(riskClass = as.factor(riskClass)) %>% 
   mutate(Name = as.factor(Name))
 
@@ -78,17 +94,28 @@ head(threeMonth)
 ```
 
 ```{r}
-riskData <- threeMonth %>% 
-  ungroup() %>% 
-  select(-Name,-date, -riskClass)
-head(riskData)
+riskClassifier <- glm(riskClass ~ high + low + volume + SD + SDvolume, data = riskData, family="binomial")
+# decided to not use open and close variables as they were not statistically significant
+summary(riskClassifier)
+```
+```{r}
+set.seed(200)
 
-riskDataScaled <- scale(riskData)
+index <- createDataPartition(riskData$riskClass, p = 0.7, list = FALSE)
+
+training <- riskData[index,]
+test <- riskData[-index,]
 ```
 
 ```{r}
-fviz_nbclust(riskDataScaled, kmeans, method=c("wss"))
+riskClassifier <- glm(riskClass ~ high + low + volume + SD, data = training, family="binomial")
 
-fviz_nbclust(riskDataScaled, kmeans, method=c("silhouette"))
+predictions <- predict(riskClassifier,test)
 ```
+
+```{r}
+table(true=test$riskClass,
+      predicted=predict(riskClassifier, test, type = "response") > 0.65)
+```
+
 
