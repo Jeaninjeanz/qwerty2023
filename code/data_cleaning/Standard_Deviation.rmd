@@ -8,6 +8,7 @@ library(tidyverse)
 library(dplyr)
 library(readr)
 library(lubridate)
+library(factoextra)
 
 ```
 
@@ -62,3 +63,32 @@ threeMonth <- threeMonth %>%
   mutate(SD = sqrt(varience))
 threeMonth
 ```
+
+```{r}
+summary(threeMonth$SD)
+
+threeMonth <- threeMonth %>% 
+  mutate(riskClass = case_when(SD < 9.5 ~ "Low",
+                               SD > 9.5 && SD < 17.75 ~ "Medium",
+                               SD > 17.75 ~ "High")) %>% 
+  mutate(riskClass = as.factor(riskClass)) %>% 
+  mutate(Name = as.factor(Name))
+
+head(threeMonth)
+```
+
+```{r}
+riskData <- threeMonth %>% 
+  ungroup() %>% 
+  select(-Name,-date, -riskClass)
+head(riskData)
+
+riskDataScaled <- scale(riskData)
+```
+
+```{r}
+fviz_nbclust(riskDataScaled, kmeans, method=c("wss"))
+
+fviz_nbclust(riskDataScaled, kmeans, method=c("silhouette"))
+```
+
