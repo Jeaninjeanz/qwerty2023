@@ -14,18 +14,18 @@ library(rugarch)
 
 Getting data
 ```{r}
-getSymbols("WIPRO.NS",from = "2011-01-01",to = "2021-03-31")
-chartSeries(WIPRO.NS)
+getSymbols("GOOG",from = "2011-01-01",to = "2021-03-31")
+chartSeries(GOOG)
 ```
 
 ```{r}
-stockData <- WIPRO.NS$WIPRO.NS.Close
+stockData <- GOOG$GOOG.Close
 ```
 
 Calculate Daily returns and remove null
 ```{r}
-stockData <- na.omit(lreturn)
-return <- CalculateReturns(WIPRO.NS$WIPRO.NS.Close)
+stockData <- na.omit(stockData)
+return <- CalculateReturns(GOOG$GOOG.Close)
 return <- return[-1]
 return <- na.omit(return)
 ```
@@ -35,6 +35,8 @@ return <- na.omit(return)
 
 autoplot(return)
 ```
+
+
 ```{r}
 chart.Histogram(return,
                 methods = c('add.density', 'add.normal'),
@@ -80,6 +82,14 @@ sim <- ugarchpath(spec = sfinal,
                   rseed = 16)
 plot.zoo(fitted(sim))
 ```
+Creating predictions:
+
+```{r}
+prediction_April_Wipro<- 410.10*apply(fitted(sim), 2, 'cumsum') + 410.10
+matplot(prediction_April_Wipro, type = "l", lwd = 3)
+```
+
+
 Creating predictions:
 
 ```{r}
