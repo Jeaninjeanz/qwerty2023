@@ -35,6 +35,8 @@ Finding the average price and creating a column
 #Finding the average price and creating a column
 threeMonth <- threeMonth %>% mutate(averagePrice = (open+close)/2)
 
+#count number of years in the dataset to make code neater + automation
+
 threeMonth <- threeMonth %>% 
   group_by(Name) %>% 
   mutate(yearAvg = (sum(averagePrice))/(365.25*5)) %>% 
@@ -71,8 +73,10 @@ threeMonth
 summary(threeMonth$SDvolume)
 ```
 
+
 ```{r}
 summary(threeMonth$SD)
+summary(threeMonth$SDvolume)
 
 price_SD_Q1 <- summary(threeMonth$SD)[2]
 price_SD_mean <- summary(threeMonth$SD)[4]
@@ -84,14 +88,25 @@ volume_SD_mean <- summary(threeMonth$SDvolume)[4]
 #arbitrarily decided on these ranges to classify the risk
 
 riskData <- threeMonth %>% 
-  mutate(riskClass = case_when(SD < Q1 && SDvolume < volume_SD_Q1 ~ "Low",
-                               SD > Q1 && SD < data_mean && SDvolume < volume_SD_mean ~ "Medium",
-                               SD > data_mean && SDvolume > volume_SD_mean ~ "High")) %>% 
+  mutate(riskClass = case_when(SD < price_SD_Q1  ~ "Low",
+                               SD > price_SD_Q1 && SD < price_SD_mean ~ "Medium",
+                               SD > price_SD_mean ~ "High")) %>% 
   mutate(riskClass = as.factor(riskClass)) %>% 
   mutate(Name = as.factor(Name))
 
+saveRDS(riskData,"riskData.rds")
+
+# riskData <- threeMonth %>% 
+#   mutate(riskClass = case_when(SD < price_SD_Q1 && SDvolume < volume_SD_Q1 ~ "Low",
+#                                SD > price_SD_Q1 && SD < price_SD_mean 
+#                                && SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
+#                                SD > price_SD_mean && SDvolume > volume_SD_mean  ~ "High")) %>% 
+#   mutate(riskClass = as.factor(riskClass)) %>% 
+#   mutate(Name = as.factor(Name))
+
 head(threeMonth)
 ```
+
 
 ```{r}
 riskClassifier <- glm(riskClass ~ high + low + volume + SD + SDvolume, data = riskData, family="binomial")
