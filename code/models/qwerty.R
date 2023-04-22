@@ -152,14 +152,14 @@ server<- function(input, output, session) {
   prediction <- function(P) {
     period_predict <<- as.numeric(P) * 365
     
-    first <- head(top_six, 1)
+    first <- top_six[2,]
     stock_name <<- as.character(first)
   #  stock_name <<- "GOOG"
     stock_object <<- getSymbols(stock_name,from = "2011-01-01",to = "2021-03-31", auto.assign = FALSE)
     #stock_object <<- as.xts(first)
    # temp1 <- as.data.frame(stock_object)
    # stock_close <<- temp1 %>% select(4)
-    stock_close <<- stock_object$GOOG.Close
+    stock_close <<- stock_object[,4]
    # concat <- ".Close"
    # concat_string <<- paste(stock_name, concat)
     new_forcast <- garch_prediction(period_predict, stock_name)
