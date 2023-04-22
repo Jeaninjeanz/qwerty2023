@@ -8,25 +8,32 @@ library(tidyverse)
 library(caret)
 ```
 
-
+#load data
 ```{r}
 riskData <- read_rds("riskData.rds")
 riskData <- riskData %>% 
-  select(-SDvolume)
-na.exclude(riskData)
+  select(open, high, low, close, volume, SD, riskClass)
+
+riskData <- riskData[-1]
+
+head(riskData)
+colSums(is.na(riskData))
+
 ```
 
+#setup preprocesses and create partitions
 ```{r}
 preProcess <- c("center","scale")
 
-i <- createDataPartition(y = riskData$riskClass, times = 1, p = 0.8, list = FALSE)
+i <- createDataPartition(y = riskData$riskClass, p = 0.8, list = FALSE)
 
 training_set <- riskData[i,]
 test_set <- riskData[-i,]
 ```
 
+#train the model
 ```{r}
-trControl <- trainControl(method = "repeatedcv",number = 10,repeats = 10)
+trControl <- trainControl(method = "repeatedcv",number = 3,repeats = 3)
 
 model <- train(riskClass ~ ., method='knn', data = training_set, metric='Accuracy',preProcess = preProcess, trControl=trControl)
 ```
