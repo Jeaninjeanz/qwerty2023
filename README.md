@@ -4,8 +4,8 @@ Investment recommendations using financial, risk and machine learning libraries 
 # PLEASE NOTE
 - create individual branches for any modifications to the code and/or file structure (compartmentalization)
 - commit to main branch for modifications of readme
-- branches can be made of all files directly or editing individual files
-- team to review and commit any changes made every 4 (?) hours to main branch 
+- commit to main branch for initial file commits
+- branches can be made of all files directly or by editing individual files
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
 # TO DO
@@ -33,46 +33,37 @@ Investment recommendations using financial, risk and machine learning libraries 
 3. [ai] produces [recommendations] for [user]
 
 ## User request parameters
-- risk level*
-- age*
-- required amount and rate of return*
-- time period*
-- payout preferences (weekly, monthly, yearly, end)*
-- user's investment history
-- single/portfolio*
+- points/rands
+- amount
+- risk level
+- prediction period
 
 ## Stock variables
-- name *
-- type (stocks, bonds, moneymarket instruments)*
-- company
-- intrinsic value of stock *
-- market value of stock *
-- intrinsic value of company
-- market value of company
-- price/earnings
-- beta (systematic risk) *
-- value
-- return on investment
-- return on portfolio
-- historical divended yields
-- historical company pay out ratio
-- industry
-- industry analysis
+- open
+- high
+- low
+- close
+- std deviation (volatility)
+- volume
+- price/cashflow
+- return on invested capital
+- quick ratio
+- current ratio
+- debt/assets + longterm
+- debt/equity + longterm
 
 ## Recommendation output
 - stock(s)
 - recommended splits
-- recommended industries
+- company info
+- stock info
 - risk level
 
 # Financial models
-- Relative Evaluation Model : price/earnings (dividend growth rates given)
-- Dividend Discount Model : (current dividend amounts given)
+- risk classifier using knn 
+- forecast models
 
 # R libraries:
 - QuantMod : quantitative trading models. data, charts, indicators  
 - PortfolioAnalytics : portfolio optimization wrt specific user criteria
 - PortfolioAnalytics's PerformanceAnalytics : portfolio returns
-- DerivMkts : volatility 
-- PeerPerformance : pairwise analysis of held investments vs peers
-- Risk : 26 financial risk measures
