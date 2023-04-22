@@ -1,0 +1,44 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(caret)
+library(tidyverse)
+```
+
+```{r}
+# Load the dataset into R
+data <- readRDS("riskData.rds")
+
+#filtered to be 1/10th the size to save computing power
+data <- data %>% 
+  filter(date < "2013-08-15")
+
+# Set the seed for reproducibility
+set.seed(123)
+```
+
+```{r}
+# Create a training and testing split (80/20)
+trainIndex <- createDataPartition(data$riskClass, p = 0.8, list = FALSE)
+trainData <- data[trainIndex,]
+testData <- data[-trainIndex,]
+
+# Specify the model using the train function
+model <- train(riskClass ~ ., data = trainData, method = "rf")
+```
+
+```{r}
+# Print the model results
+print(model)
+```
+
+```{r}
+# Make predictions on the test data
+predictions <- predict(model, newdata = testData)
+
+# Evaluate the model performance
+confusionMatrix(predictions, testData$riskClass)
+```
+
