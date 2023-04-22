@@ -26,7 +26,6 @@ sNpData$date <- ymd(sNpData$date)
 head(sNpData)
 ```
 
-SPLITTING DATA INTO 12 MONTHS TO TEST 
 ```{r}
 #filtered to reduce datapoints while testing
 fData <- drop_na(sNpData) 
