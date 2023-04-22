@@ -1,0 +1,55 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r Setup}
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(grid)
+library(scales)
+library(caret)
+
+```
+
+```{r}
+sNpData <- read.csv("s&p500Data/all_stocks_5yr.csv")
+
+LM <- 
+```
+
+```{r}
+closingData <- LMdata %>% 
+  group_by(Name) %>% 
+  filter(Name == "AAL") %>% 
+  select(close)
+closingData <- closingData[-1]
+closingData
+```
+
+```{r}
+
+forecastData <- ts(closingData$close, start = c(2013, 02), end = c(2014, 02), frequency = 252)
+
+forecastData
+
+```
+
+Fitting to model
+```{r}
+
+companyData_arima <- arima(closingData, order = c(1,1,1))
+
+```
+
+```{r}
+# Generate 30-day forecast
+companyForecast <- forecast(companyData_arima, h = 20000)
+
+# Print the forecasted values
+print(companyForecast$mean)
+```
