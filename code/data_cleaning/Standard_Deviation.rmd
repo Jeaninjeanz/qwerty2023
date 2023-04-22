@@ -95,22 +95,26 @@ riskData <- fData %>%
   mutate(riskClass = as.factor(riskClass)) %>% 
   mutate(Name = as.factor(Name))
 
-# riskData <- fData %>% 
-#   mutate(riskClass = case_when(SD < price_SD_Q1 && SDvolume < volume_SD_Q1 ~ "Low",
-#                                SD > price_SD_Q1 && SD < price_SD_mean 
-#                                && SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
-#                                SD > price_SD_mean && SDvolume > volume_SD_mean  ~ "High")) %>% 
-#   mutate(riskClass = as.factor(riskClass)) %>% 
-#   mutate(Name = as.factor(Name))
+riskData <- riskData %>%
+  mutate(riskClasssd = case_when(SDvolume < volume_SD_Q1 ~ "Low",
+                               SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
+                               SDvolume > volume_SD_mean  ~ "High")) %>%
+  mutate(riskClasssd = as.factor(riskClasssd))
+riskData
 
 saveRDS(riskData,"riskData.rds")
 
 riskData2 <- riskData %>% 
   mutate(riskClass = case_when(riskClass == "Low" ~ 1,
                                riskClass == "Medium" ~ 2,
-                               riskClass == "High" ~ 3)) %>% 
+                               riskClass == "High" ~ 3,
+                               riskClasssd == "Low" ~ 1,
+                               riskClasssd == "Medium" ~ 2,
+                               riskClasssd == "High" ~ 3)) %>% 
   summarise(meancat = mean(riskClass), .groups = 'drop') %>% 
-  mutate(category1 = case_when(meancat <= 1.5 ~ "Low", meancat < 2.5 ~ "Medium", meancat >= 2.5 ~ "High"))
+  mutate(category1 = case_when(meancat <= 1.5 ~ "Low", meancat < 2.5 ~ "Medium", meancat >= 2.5 ~ "High")) %>% 
+  select(,-meancat)
+riskData2
 
 saveRDS(riskData2,"CompaniesRisk.rds")
 
