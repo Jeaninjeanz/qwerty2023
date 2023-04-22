@@ -1,0 +1,33 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(caret)
+```
+
+
+```{r}
+riskData <- read_rds("riskData.rds")
+riskData <- riskData %>% 
+  select(-SDvolume)
+na.exclude(riskData)
+```
+
+```{r}
+preProcess <- c("center","scale")
+
+i <- createDataPartition(y = riskData$riskClass, times = 1, p = 0.8, list = FALSE)
+
+training_set <- riskData[i,]
+test_set <- riskData[-i,]
+```
+
+```{r}
+trControl <- trainControl(method = "repeatedcv",number = 10,repeats = 10)
+
+model <- train(riskClass ~ ., method='knn', data = training_set, metric='Accuracy',preProcess = preProcess, trControl=trControl)
+```
+
