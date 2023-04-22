@@ -16,6 +16,8 @@ library(caret)
 
 ```{r}
 sNpData <- read.csv("raw_data/all_stocks_5yr.csv")
+
+sNpData <- na.omit(sNpData)
 ```
 
 ```{r}
@@ -24,28 +26,30 @@ sNpData$date <- ymd(sNpData$date)
 head(sNpData)
 ```
 
-
+SPLITTING DATA INTO 12 MONTHS TO TEST 
 ```{r}
 #filtered to reduce datapoints while testing
-threeMonth <- drop_na(sNpData) 
-threeMonth
+fData <- drop_na(sNpData) 
+fData
 ```
 Finding the average price and creating a column
 ```{r}
 #Finding the average price and creating a column
-threeMonth <- threeMonth %>% mutate(averagePrice = (open+close)/2)
+fData <- fData %>% mutate(averagePrice = (open+close)/2)
 
-threeMonth <- threeMonth %>% 
+#count number of years in the dataset to make code neater + automation
+
+fData <- fData %>% 
   group_by(Name) %>% 
   mutate(yearAvg = (sum(averagePrice))/(365.25*5)) %>% 
   mutate(yearVolumeAvg = (sum(volume))/(365.25*5))
-threeMonth
+fData
 
 ```
 
 Calculate the diff in average price, square the diff then sum the values
 ```{r}
-threeMonth <- threeMonth %>% 
+fData <- fData %>% 
   group_by(Name) %>% 
   mutate(averagePrice = sum(((averagePrice - yearAvg)^2))) %>% 
   mutate(averageVolume = sum(((volume - yearVolumeAvg)^2)))
@@ -54,44 +58,57 @@ find the squared varience and standard deviation
 
 ```{r}
 #varience 
-threeMonth <- threeMonth %>% 
+fData <- fData %>% 
   group_by(Name) %>% 
   mutate(varience = (averagePrice/(365.25*5))) %>% 
   mutate(volumeVarience = (averageVolume/(365.25*5)))
 
-threeMonth
+fData
 
 #calculating the standard deviation
-threeMonth <- threeMonth %>% 
+fData <- fData %>% 
   group_by(Name) %>% 
   mutate(SD = sqrt(varience)) %>% 
   mutate(SDvolume = sqrt(volumeVarience))
-threeMonth
+fData
 
-summary(threeMonth$SDvolume)
+summary(fData$SDvolume)
 ```
 
+
 ```{r}
-summary(threeMonth$SD)
+summary(fData$SD)
+summary(fData$SDvolume)
 
-price_SD_Q1 <- summary(threeMonth$SD)[2]
-price_SD_mean <- summary(threeMonth$SD)[4]
+price_SD_Q1 <- summary(fData$SD)[2]
+price_SD_mean <- summary(fData$SD)[4]
 
-volume_SD_Q1 <- summary(threeMonth$SDvolume)[2]
-volume_SD_mean <- summary(threeMonth$SDvolume)[4]
+volume_SD_Q1 <- summary(fData$SDvolume)[2]
+volume_SD_mean <- summary(fData$SDvolume)[4]
 
 
 #arbitrarily decided on these ranges to classify the risk
 
-riskData <- threeMonth %>% 
-  mutate(riskClass = case_when(SD < Q1 && SDvolume < volume_SD_Q1 ~ "Low",
-                               SD > Q1 && SD < data_mean && SDvolume < volume_SD_mean ~ "Medium",
-                               SD > data_mean && SDvolume > volume_SD_mean ~ "High")) %>% 
+riskData <- fData %>% 
+  mutate(riskClass = case_when(SD < price_SD_Q1  ~ "Low",
+                               SD >= price_SD_Q1 && SD <= price_SD_mean ~ "Medium",
+                               SD > price_SD_mean ~ "High")) %>% 
   mutate(riskClass = as.factor(riskClass)) %>% 
   mutate(Name = as.factor(Name))
 
-head(threeMonth)
+saveRDS(riskData,"riskData.rds")
+
+# riskData <- fData %>% 
+#   mutate(riskClass = case_when(SD < price_SD_Q1 && SDvolume < volume_SD_Q1 ~ "Low",
+#                                SD > price_SD_Q1 && SD < price_SD_mean 
+#                                && SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
+#                                SD > price_SD_mean && SDvolume > volume_SD_mean  ~ "High")) %>% 
+#   mutate(riskClass = as.factor(riskClass)) %>% 
+#   mutate(Name = as.factor(Name))
+
+head(fData)
 ```
+
 
 ```{r}
 riskClassifier <- glm(riskClass ~ high + low + volume + SD + SDvolume, data = riskData, family="binomial")
