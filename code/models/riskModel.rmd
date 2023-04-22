@@ -6,11 +6,18 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 library(caret)
+library(doParallel)
+library(modelsummary)
 ```
 
 #load data
 ```{r}
 riskData <- read_rds("riskData.rds")
+
+#filter to 1/10th to save computing power 2013-08-15
+# riskData <- riskData  %>% 
+#   filter(date < "2015-08-15")
+
 riskData <- riskData %>% 
   select(open, high, low, close, volume, SD, riskClass)
 
@@ -28,7 +35,15 @@ preProcess <- c("center","scale")
 i <- createDataPartition(y = riskData$riskClass, p = 0.8, list = FALSE)
 
 training_set <- riskData[i,]
+
 test_set <- riskData[-i,]
+
+
+```
+
+## Use parallel computing
+```{r}
+registerDoParallel(cores = detectCores() - 1)
 ```
 
 #train the model
@@ -36,5 +51,20 @@ test_set <- riskData[-i,]
 trControl <- trainControl(method = "repeatedcv",number = 3,repeats = 3)
 
 model <- train(riskClass ~ ., method='knn', data = training_set, metric='Accuracy',preProcess = preProcess, trControl=trControl)
+```
+
+#testing the model
+```{r}
+test_set$pred <- predict(model, test_set)
+
+test_set$fPred <- as.factor(test_set$pred)
+test_set$fTruth <- as.factor(test_set$riskClass)
+
+confusionMatrix(test_set$fPred, test_set$riskClass)
+```
+
+#saving the model
+```{r}
+saveRDS(model, file="knnmodel.rds")
 ```
 
