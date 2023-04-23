@@ -75,19 +75,19 @@ investment robo-advisor using financial, risk, machine learning and web framewor
 - forecast models using the Generalized Autoregressive Conditional Heteroskedasticity model
 
 # R libraries:
--tidyverse
--lubridate
--ggplot2
--factoextra
--caret
--caretEnsemble
--zoo
--quantmod
--xts
--PerformanceAnalytics
--rugarch
--grid
--scales
+- tidyverse
+- lubridate
+- ggplot2
+- factoextra
+- caret
+- caretEnsemble
+- zoo
+- quantmod
+- xts
+- PerformanceAnalytics
+- rugarch
+- grid
+- scales
 -tseries
 -caTools
 -forecast
