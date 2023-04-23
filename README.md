@@ -71,8 +71,8 @@ investment robo-advisor using financial, risk, machine learning and web framewor
 - risk level
 
 # models
-- risk classifier using supervised machine learning (knn)
-- forecast models using the Generalized Autoregressive Conditional Heteroskedasticity model
+- risk classifier using supervised machine learning (k-nearest neighbours)
+- forecast models using the Generalized Autoregressive Conditional Heteroskedasticity (GARGCH) model
 
 # R libraries:
 - tidyverse
