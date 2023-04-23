@@ -88,10 +88,10 @@ investment robo-advisor using financial, risk, supervised machine learning and w
 - rugarch
 - grid
 - scales
--tseries
--caTools
--forecast
--shiny
--data.table
--RPostgresSQL
--DBI
+- tseries
+- caTools
+- forecast
+- shiny
+- data.table
+- RPostgresSQL
+- DBI
