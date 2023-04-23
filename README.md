@@ -1,5 +1,5 @@
 # qwerty2023
-investment robo-advisor using financial, risk, machine learning and web framework libraries in R for the discovery gradhack 2023.
+investment robo-advisor using financial, risk, supervised machine learning and web framework libraries in R for the discovery gradhack 2023.
 
 ## time frame
 43 hours
@@ -71,7 +71,7 @@ investment robo-advisor using financial, risk, machine learning and web framewor
 - risk level
 
 # models
-- risk classifier using supervised machine learning (k-nearest neighbours)
+- risk classifier using repeated cross-validation (k-nearest neighbours)
 - forecast models using the Generalized Autoregressive Conditional Heteroskedasticity (GARGCH) model
 
 # R libraries:
