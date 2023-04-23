@@ -2,7 +2,7 @@
 Investment robo-advisor using financial, risk, machine learning and web framework libraries in R for the Discovery Gradhack 2023.
 
 ## time frame
-
+43 hours
 
 ## team
 
