@@ -62,5 +62,8 @@ garch_prediction <- function(period_predict, stock_name) {
   predictionForcast <- 410.10*apply(fitted(sim), 2, 'cumsum') + 410.10
   matplot(predictionForcast, type = "l", lwd = 3)
   
-  return(predictionForcast)
+  predictionDifference <<- last(predictionForcast) - first(predictionForcast)
+  
+  #return(predictionDifference)
 }
+
