@@ -11,7 +11,7 @@ investment robo-advisor using financial, risk, machine learning and web framewor
 - sean morrison : data acquisition and cluster analysis
 - jean marx : github management and machine learning models
 
-### TEAM NOTES
+### team notes
 - commit to main branch for modifications of readme
 - commit to main branch for initial file commits
 - branches can be made of all files directly or by editing individual files
@@ -20,7 +20,7 @@ investment robo-advisor using financial, risk, machine learning and web framewor
 # to do
 - Front end integration, finalizing prototype and presentation slides
 - diagrams of data flow revision & update
-- github file management 
+- github file management + set public
 
 
 # workplan
