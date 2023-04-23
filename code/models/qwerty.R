@@ -16,6 +16,7 @@ source("garch.R")
 
 sNpData <- read.csv("all_stocks_5yr.csv")
 top_six <- read_csv("selection.csv")
+smallRiskData <- readRDS("fundemental.rds")
 #conn <- odbcConnect("tcp:qwerty2023.database.windows.net", uid="saring", pwd="QwertyWins!", database="Qwerty_Risk") #, trusted_connection = FALSE)
 
 #con <- dbConnect(odbc::odbc(),
@@ -63,10 +64,10 @@ result <- dbGetQuery(con, "SELECT * FROM all_companies")
 
 
 # write risk csv into postgresql table
-qwerty_risk <- read.csv("companyForecast.csv")
-dbWriteTable(con, "qwerty_risk", qwerty_risk, overwrite = TRUE)
+#qwerty_risk <- read.csv("companyForecast.csv")
+#dbWriteTable(con, "qwerty_risk", qwerty_risk, overwrite = TRUE)
 
-result <- dbGetQuery(con, "SELECT * FROM qwerty_risk")
+#result <- dbGetQuery(con, "SELECT * FROM qwerty_risk")
 
 # UI
 ui <- pageWithSidebar(
@@ -129,6 +130,7 @@ server<- function(input, output, session) {
                              input$Prediction.Period)),
       stringsAsFactors = FALSE)
     
+      userRiskSelection(input$Risk.Category)
       prediction(input$Prediction.Period)
     #x <- "hello"
    # company_name <- "GOOG.GOOG"
@@ -149,20 +151,58 @@ server<- function(input, output, session) {
     
   })
   
-  prediction <- function(P) {
-    period_predict <<- as.numeric(P) * 365
+  userRiskSelection <- function(S) {
+   # userSelection <- as.numeric(S)
+    userSelection = 2
+    finalSelection = "Low"
+    category2 <- smallRiskData$category1
+    final_companies <<- data.frame(name = character(), stringsAsFactors = FALSE)
     
-    first <- top_six[2,]
-    stock_name <<- as.character(first)
-  #  stock_name <<- "GOOG"
-    stock_object <<- getSymbols(stock_name,from = "2011-01-01",to = "2021-03-31", auto.assign = FALSE)
-    #stock_object <<- as.xts(first)
-   # temp1 <- as.data.frame(stock_object)
-   # stock_close <<- temp1 %>% select(4)
-    stock_close <<- stock_object[,4]
-   # concat <- ".Close"
-   # concat_string <<- paste(stock_name, concat)
-    new_forcast <- garch_prediction(period_predict, stock_name)
+    if (userSelection == 1) {
+      finalSelection = "Low"
+    } else if (userSelection == 2) {
+      finalSelection = "Medium"
+    } else if (userSelection == 3) {
+      finalSelection = "High"
+    }
+    
+    for (i in 1:length(category2)){
+      if (finalSelection == category2[i]){
+      # write.csv(smallRiskData$share[i], file = "filtered_company.csv", append = TRUE, row.name = TRUE)  
+        final_companies <- rbind(final_companies, smallRiskData$share[i])
+      }
+    }
+    
+    dbWriteTable(con, "qwerty_risk", final_companies, overwrite = TRUE)
+   # result <- dbGetQuery(con, "SELECT * FROM qwerty_risk")
+    
+  }
+  
+  prediction <- function(P) {
+    period_predict <<- as.numeric(1) * 365 # !!!!
+    
+    for (i in 1:length(final_companies$X.AAPL.)) {
+     # first <- top_six[2,]
+      first <- final_companies[i,]
+      stock_name <<- as.character(first)
+      #  stock_name <<- "GOOG"
+      stock_object <<- getSymbols(stock_name,from = "2011-01-01",to = "2021-03-31", auto.assign = FALSE)
+      #stock_object <<- as.xts(first)
+      # temp1 <- as.data.frame(stock_object)
+      # stock_close <<- temp1 %>% select(4)
+      stock_close <<- stock_object[,4]
+      # concat <- ".Close"
+      # concat_string <<- paste(stock_name, concat)
+     # predictionResult <- garch_prediction(period_predict, stock_name)
+      garch_prediction(period_predict, stock_name)
+      predictionResult <- predictionDifference
+      
+      final_companies <- final_companies %>% 
+        if (final_companies[i,] == stock_name) {
+          mutate(data = final_companies, Result = c(predictionResult))
+        }
+    }
+    
   }
   
   # Status/Output Text Box
