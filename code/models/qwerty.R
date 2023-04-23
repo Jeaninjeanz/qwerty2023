@@ -11,12 +11,14 @@ library(xts)
 library(PerformanceAnalytics)
 library(rugarch)
 library(dplyr)
+library(readr)
 
 source("garch.R")
 
 sNpData <- read.csv("all_stocks_5yr.csv")
-top_six <- read_csv("selection.csv")
+top_six <- read.csv("selection.csv")
 smallRiskData <- readRDS("fundemental.rds")
+hard <- read.csv("hard.csv")
 #conn <- odbcConnect("tcp:qwerty2023.database.windows.net", uid="saring", pwd="QwertyWins!", database="Qwerty_Risk") #, trusted_connection = FALSE)
 
 #con <- dbConnect(odbc::odbc(),
@@ -46,6 +48,8 @@ smallRiskData <- readRDS("fundemental.rds")
 
 tryCatch({
 #  drv <- dbDriver("PostgreSQL")
+  
+
   print("Connecting to Database…")
   con <- dbConnect(PostgreSQL(),
                    dbname = "qwerty",
@@ -54,6 +58,7 @@ tryCatch({
                    user = "postgres",
                    password = "root")
   print("Database Connected!")
+
 })
 
 # write csv into postgresql table
@@ -83,12 +88,11 @@ ui <- pageWithSidebar(
     #HTML("<h3>Input parameters</h3>"),
    # tags$label(h3('Input parameters')),
     radioButtons("Radio.Money", label = "",
-                 choices = list("Discovery Points" = 1,
-                                "Rands" = 2), 
+                 choices = list("Stocks" = 1), 
                  inline = TRUE, selected = 1),
     numericInput("Invest.Amount", 
-                 label = "Amount to invest", 
-                 value = 1000.00),
+                 label = "How many stocks would you like to buy?", 
+                 value = 0),
     selectInput("Risk.Category", label = "Choose a risk category",
                choices = list("Low Risk" = 1, "Medium Risk" = 2,
                               "High Risk" = 3), selected = 1),
@@ -130,8 +134,13 @@ server<- function(input, output, session) {
                              input$Prediction.Period)),
       stringsAsFactors = FALSE)
     
-      userRiskSelection(input$Risk.Category)
-      prediction(input$Prediction.Period)
+  #  observeEvent(input$submitbutton, { 
+      finalfinal <- userRiskSelection(input$Risk.Category)
+     # prediction(input$Prediction.Period, finalfinal)
+    
+    #finalfinal <- userRiskSelection(2)
+    #prediction(1, finalfinal)
+    #})
     #x <- "hello"
    # company_name <- "GOOG.GOOG"
     
@@ -152,8 +161,9 @@ server<- function(input, output, session) {
   })
   
   userRiskSelection <- function(S) {
-   # userSelection <- as.numeric(S)
-    userSelection = 2
+    print("RISK")
+    userSelection <- as.numeric(S)
+    #userSelection = 2
     finalSelection = "Low"
     category2 <- smallRiskData$category1
     final_companies <<- data.frame(name = character(), stringsAsFactors = FALSE)
@@ -166,19 +176,36 @@ server<- function(input, output, session) {
       finalSelection = "High"
     }
     
-    for (i in 1:length(category2)){
-      if (finalSelection == category2[i]){
+    
+   # for (i in 1:length(hard)){
+      
+    #  if (finalSelection == category2[i]){
       # write.csv(smallRiskData$share[i], file = "filtered_company.csv", append = TRUE, row.name = TRUE)  
-        final_companies <- rbind(final_companies, smallRiskData$share[i])
-      }
-    }
+       # final_companies <- rbind(final_companies, smallRiskData$share[i])
+    #  }
+   # }
+    
+    hard <- hard %>% 
+      filter(hard$risk == finalSelection) 
+    
+    #differenceHard <- summary(hard)[6,3]
+    
+    hard <- hard %>% 
+      mutate(maxDiff = max(difference)) %>% 
+      filter(hard$difference == maxDiff) %>% 
+      mutate(AmountDue = closing * 5) %>% 
+      mutate(AmountMade = (difference * 5) - AmountDue) %>% 
+      select(name, closing, risk, AmountDue, AmountMade)
     
     dbWriteTable(con, "qwerty_risk", final_companies, overwrite = TRUE)
    # result <- dbGetQuery(con, "SELECT * FROM qwerty_risk")
+    return(hard)
+    #companies
     
   }
   
-  prediction <- function(P) {
+  prediction <- function(P, final_companies) {
+    print("PREDICT")
     period_predict <<- as.numeric(1) * 365 # !!!!
     
     for (i in 1:length(final_companies$X.AAPL.)) {
@@ -187,6 +214,7 @@ server<- function(input, output, session) {
       stock_name <<- as.character(first)
       #  stock_name <<- "GOOG"
       stock_object <<- getSymbols(stock_name,from = "2011-01-01",to = "2021-03-31", auto.assign = FALSE)
+      
       #stock_object <<- as.xts(first)
       # temp1 <- as.data.frame(stock_object)
       # stock_close <<- temp1 %>% select(4)
@@ -198,12 +226,17 @@ server<- function(input, output, session) {
       predictionResult <- predictionDifference
       
       final_companies <- final_companies %>% 
-        if (final_companies[i,] == stock_name) {
-          mutate(data = final_companies, Result = c(predictionResult))
+        filter(final_companies[i,] == stock_name) %>% 
+        mutate(Result = predictionResult)
+        #if (as.character(final_companies[i,]) == stock_name) {
+          print("hi")
+         # mutate(data = final_companies, Result = predictionResult)
+          rm(stock_object)
+          rm(stock_name)
         }
     }
     
-  }
+  
   
   # Status/Output Text Box
   output$contents <- renderPrint({
@@ -227,3 +260,6 @@ server<- function(input, output, session) {
 # Create the shiny app             #
 ####################################
 shinyApp(ui = ui, server = server)
+
+dbDisconnect(con)
+
