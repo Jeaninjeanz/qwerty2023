@@ -1,5 +1,8 @@
 # qwerty2023
-Investment recommendations using financial, risk, machine learning and web framework libraries in R for the Discovery Gradhack 2023.
+Investment robo-advisor using financial, risk, machine learning and web framework libraries in R for the Discovery Gradhack 2023.
+
+## time frame
+
 
 ## team
 
@@ -16,7 +19,10 @@ Investment recommendations using financial, risk, machine learning and web frame
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
 # TO DO
-- Front end integration and finalizing prototype. 
+- Front end integration, finalizing prototype and presentation slides
+- diagrams of data flow revision & update
+- github file management 
+
 
 # Workplan
 ## Phase 1
