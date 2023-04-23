@@ -8,11 +8,10 @@ Investment robo-advisor using financial, risk, machine learning and web framewor
 
 - sarah ingram : web framework [team leader]
 - daniel bockle : forecasting models and web framework
-- sean morrison : data acquisition and exploratory data analytics 
-- jean marx : github managemen and machine learning models
+- sean morrison : data acquisition and cluster analysis
+- jean marx : github management and machine learning models
 
 ### TEAM NOTES
-- create individual branches for any modifications to the code and/or file structure (compartmentalization)
 - commit to main branch for modifications of readme
 - commit to main branch for initial file commits
 - branches can be made of all files directly or by editing individual files
@@ -71,15 +70,28 @@ Investment robo-advisor using financial, risk, machine learning and web framewor
 - stock info
 - risk level
 
-# ui
-- ???
-
 # models
 - risk classifier using supervised machine learning (knn)
 - forecast models using the Generalized Autoregressive Conditional Heteroskedasticity model
 
 # R libraries:
-- QuantMod : quantitative trading models. data, charts, indicators  
-- tidyverse
-- caret
-- ???
+-tidyverse
+-lubridate
+-ggplot2
+-factoextra
+-caret
+-caretEnsemble
+-zoo
+-quantmod
+-xts
+-PerformanceAnalytics
+-rugarch
+-grid
+-scales
+-tseries
+-caTools
+-forecast
+-shiny
+-data.table
+-RPostgresSQL
+-DBI
