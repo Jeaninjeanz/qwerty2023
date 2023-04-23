@@ -1,5 +1,5 @@
 # qwerty2023
-Investment robo-advisor using financial, risk, machine learning and web framework libraries in R for the Discovery Gradhack 2023.
+investment robo-advisor using financial, risk, machine learning and web framework libraries in R for the discovery gradhack 2023.
 
 ## time frame
 43 hours
@@ -17,39 +17,39 @@ Investment robo-advisor using financial, risk, machine learning and web framewor
 - branches can be made of all files directly or by editing individual files
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
-# TO DO
+# to do
 - Front end integration, finalizing prototype and presentation slides
 - diagrams of data flow revision & update
 - github file management 
 
 
-# Workplan
-## Phase 1
+# workplan
+## phase 1
 - data acquisition, cleaning and preprocessing
 - risk models
 - front end (shiny) design
 
-## Phase 2
+## phase 2
 - stock forecasting models 
 - supervised machine learning models
 - front-end, back-end integration and error checking of models
 
-## Phase 3
+## phase 3
 - wrap up front-end, back-end integration 
 
-# Data flow
+# data flow
 
 1. [user] requests [recommendations] from [ai]
 2. [ai] analyzes [stocks] using [user] criteria
 3. [ai] produces [recommendations] for [user]
 
-## User request parameters
+## user request parameters
 - discovery-points/rands
 - amount
 - risk level
 - prediction period
 
-## Stock variables
+## stock variables
 - open
 - high
 - low
@@ -63,7 +63,7 @@ Investment robo-advisor using financial, risk, machine learning and web framewor
 - debt/assets + longterm
 - debt/equity + longterm
 
-## Recommendation output
+## recommendation output
 - stock(s)
 - recommended splits
 - company info
