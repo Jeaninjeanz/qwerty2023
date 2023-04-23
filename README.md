@@ -9,7 +9,7 @@ Friday 15:00 - Sunday 11:00
 
 - sarah ingram : web framework [team leader]
 - daniel bockle : forecasting models and web framework
-- sean morrison : data acquisition and cluster analysis
+- sean morrison : data acquisition and exploratory data analysis 
 - jean marx : github management and machine learning models
 
 ### team notes
@@ -18,13 +18,7 @@ Friday 15:00 - Sunday 11:00
 - branches can be made of all files directly or by editing individual files
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
-# to do
-- Front end integration, finalizing prototype and presentation slides
-- diagrams of data flow revision & update
-- github file management + set public
-
-
-# workplan
+# game-plan
 ## phase 1
 - data acquisition, cleaning and preprocessing
 - risk models
@@ -70,9 +64,11 @@ Friday 15:00 - Sunday 11:00
 - stock info
 - risk level
 
-# limitations
-- insufficient datasets
-- 
+# future implementations
+- more datasets
+- cloud computing to train models
+- advanced user input/output
+
 
 # models
 - risk classifier using repeated cross-validation (k-nearest neighbours)
