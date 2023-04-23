@@ -27,7 +27,7 @@ investment robo-advisor using financial, risk, supervised machine learning and w
 ## phase 1
 - data acquisition, cleaning and preprocessing
 - risk models
-- front end (shiny) design
+- front end design
 
 ## phase 2
 - stock forecasting models 
@@ -65,10 +65,13 @@ investment robo-advisor using financial, risk, supervised machine learning and w
 
 ## recommendation output
 - stock(s)
-- recommended splits
 - company info
 - stock info
 - risk level
+
+# limitations
+- insufficient datasets
+- 
 
 # models
 - risk classifier using repeated cross-validation (k-nearest neighbours)
