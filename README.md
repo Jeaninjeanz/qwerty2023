@@ -1,16 +1,20 @@
 # qwerty2023
 investment robo-advisor using financial, risk, supervised machine learning and web framework libraries in R for the discovery gradhack 2023.
 
-## time frame
-Friday 15:00 - Sunday 11:00
-[43 hours]
-
 ## team
 
 - sarah ingram : web framework [team leader]
 - daniel bockle : forecasting models and web framework
 - sean morrison : data acquisition and exploratory data analysis 
 - jean marx : github management and machine learning models
+
+## initial time frame
+Friday 15:00 - Sunday 11:00
+[43 hours]
+
+## secondary time frame
+24 April - 5 May
+[2 weeks] 
 
 ### team notes
 - commit to main branch for modifications of readme
@@ -19,17 +23,31 @@ Friday 15:00 - Sunday 11:00
 - folder creation is fiddly, as git does not support empty folders. so to save a file within a subfolder of "qwerty2023", simply type the folder name into the file name to save the file within that new subfolder. eg. "/subfolder/file.txt"
 
 # game-plan
-## phase 1
+## final presentation
+### phase 1
+- problem definitions of overhauls
+- datasets acquisition
+
+### phase 2
+- risk and forecast overhaul
+- UI overhaul 
+
+### phase 3
+- front end, back end integration 
+- presentation
+
+## discovery gradhack weekend
+### phase 1
 - data acquisition, cleaning and preprocessing
 - risk models
 - front end design
 
-## phase 2
+### phase 2
 - stock forecasting models 
 - supervised machine learning models
 - front-end, back-end integration and error checking of models
 
-## phase 3
+### phase 3
 - wrap up front-end, back-end integration 
 
 # data flow
@@ -51,21 +69,23 @@ Friday 15:00 - Sunday 11:00
 - close
 - std deviation (volatility)
 - volume
-- price/cashflow
-- return on invested capital
-- quick ratio
-- current ratio
-- debt/assets + longterm
-- debt/equity + longterm
+- price/cashflow *
+- return on invested capital *
+- quick ratio *
+- current ratio *
+- debt/assets + longterm *
+- debt/equity + longterm *
 
 ## recommendation output
 - stock(s)
-- company info
-- stock info
+- company info *
+- stock info *
 - risk level
 
 # future implementations
-- more datasets
+- weighted risk model
+- weighted forecast model
+- more datasets 
 - cloud computing to train models
 - advanced user input/output
 
