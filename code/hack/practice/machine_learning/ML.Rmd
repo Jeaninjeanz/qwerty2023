@@ -1,0 +1,86 @@
+
+```{r Setup}
+
+library(tidyverse)
+library(dplyr)
+
+```
+
+
+Murder arrests per 100 000 , Assault arrests per 100 000, Urpan pop (%), Rape arrests per 100 000
+```{r}
+data(USArrests)
+
+mydata <- USArrests
+
+mydata <- mydata %>% mutate(stateNum = row_number())
+
+mydata 
+
+```
+
+Which states have the highest rape arrests total?
+```{r}
+
+output <- mydata %>%  select(Rape) %>% mutate(maxRape = max(Rape)) %>% filter(Rape == maxRape)
+output
+
+```
+Nevada either has a great police and detectives or it has a high crime rate.
+
+
+Calculating crimestats using murder and rape
+```{r}
+
+mydata <- mydata %>% add_column(riskLevel = "Low")
+mydata
+
+mydata <- mydata %>% 
+  rowwise() %>% 
+  mutate(crimeStats = sum(Rape,Murder))
+           
+mydata
+```
+
+Calculating Risk level per stateNum
+```{r}
+highRisk <- mydata %>% 
+  filter(crimeStats>=40) %>% 
+  mutate(riskLevel = "High")
+  
+lowRisk <- mydata %>% 
+  filter(crimeStats<40) %>% 
+  mutate(riskLevel = "Low")
+
+riskData <- full_join(highRisk, lowRisk)
+
+riskData <- riskData %>% 
+  arrange(stateNum)
+
+riskData
+
+
+```
+
+Using machine learning to calculate RiskLevel
+```{r}
+# Split the data into training and testing sets
+set.seed(465)
+
+index <- createDataPartition(riskData$riskLevel, p = 0.5, list = FALSE)
+
+training <- riskData[index, ]
+testing <- riskData[-index, ]
+
+
+#Using two different stats to train the AI (Assault + UrbanPop) 
+model <- lm(crimeStats ~ Assault + UrbanPop, data = training)
+
+predictions <- predict(model, riskData = testing)
+
+predictions
+
+```
+
+
+

@@ -1,0 +1,148 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(caret)
+library(caretEnsemble)
+library(tidyverse)
+library(magrittr)
+library(dplyr)
+library(doParallel)
+```
+
+# Phase 1
+## Get all models for classification:
+```{r}
+all_models <- modelLookup()
+
+classification_model <- all_models %>% 
+  filter(forClass == TRUE, !duplicated(model))
+```
+
+## All packages will be used for training these models: 
+```{r}
+all_packages <- sapply(classification_model$model, 
+                       function(x) {
+                         x %>% getModelInfo() %>% .[[1]] %>% .[["library"]]}) %>% unlist() 
+
+all_packages <- all_packages[!duplicated(all_packages)]
+```
+
+## All R package had being installed on your computer: 
+```{r}
+your_packages <- installed.packages() %>% 
+  as.data.frame() %>% 
+  pull(Package) %>% 
+  as.character()
+```
+
+## Some packages that can not be installed from CRAN: 
+```{r}
+cannot_installed <- c("adaptDA", "CHAID", "sparsediscrim", "elmNN", "gpls", 
+                      "logicFS", "FCNN4R", "mxnet", "vbmp")
+```
+
+## Coresponding LM approaches: 
+```{r}
+ml_not_used <- c("amdai", "chaid", "dda", "elm", "gpls", 
+                 "logicBag", "mlpSGD1", "mxnet", "vbmpRadial")
+
+```
+
+## Packages must be installed: 
+```{r}
+additional_package <- all_packages[!all_packages %in% your_packages]
+additional_package <- all_packages[!all_packages %in% cannot_installed]
+```
+
+## Installation
+```{r}
+#install.packages(pkgs = additional_package, dependencies = TRUE)
+
+should_use_ml <- classification_model %>% 
+  filter(!model %in% ml_not_used)
+```
+
+# Phase 2
+## Select models and import data
+```{r}
+all_model <- should_use_ml$model
+
+# Import data: 
+df_for_ml <- readRDS("riskData.rds")
+```
+
+## Split data
+```{r}
+set.seed(1)
+id <- createDataPartition(y = df_for_ml$riskClass, p = 0.7, list = FALSE)
+df_train_ml <- df_for_ml[id, ]
+df_test_ml <- df_for_ml[-id, ]
+```
+
+## Set conditions for training model and cross-validation: 
+```{r}
+set.seed(1)
+number <- 3
+repeats <- 2
+
+control <- trainControl(method = "repeatedcv", 
+                        number = number , 
+                        repeats = repeats, 
+                        classProbs = TRUE, 
+                        savePredictions = "final", 
+                        index = createResample(df_train_ml$riskClass, repeats*number), 
+                        summaryFunction = multiClassSummary, 
+                        allowParallel = TRUE)
+```
+
+## Use parallel computing
+```{r}
+registerDoParallel(cores = detectCores() - 1)
+```
+
+## Run
+```{r}
+set.seed(1)
+
+my_models <- all_model[1:1]
+
+model_list1 <- caretList(riskClass ~., 
+                         data = df_train_ml,
+                         trControl = control,
+                         metric = "Accuracy", 
+                         methodList = my_models)
+
+```
+
+## Extract results
+```{r}
+list_of_results <- lapply(my_models, function(x) {model_list1[[x]]$resample})
+
+df_results <- do.call("bind_rows", list_of_results)
+
+df_results %<>% mutate(Model = lapply(my_models, function(x) {rep(x, number*repeats)}) %>% unlist())
+```
+
+## Plot Comparisons
+```{r}
+df_results %>% 
+  select(Accuracy, Model) %>% 
+  ggplot(aes(Model, Accuracy, fill = Model, color = Model)) + 
+  geom_boxplot(show.legend = FALSE, alpha = 0.3) + 
+  theme_minimal() + 
+  coord_flip()
+```
+
+## Statistics
+```{r}
+f_results %>% 
+  select(Accuracy, Model) %>% 
+  group_by(Model) %>% 
+  summarise_each(funs(min, max, median, mean, sd, n()), Accuracy) %>% 
+  arrange(-mean) %>% 
+  mutate_if(is.numeric, function(x) {round(x, 3)}) %>% 
+  knitr::kable()
+```
+

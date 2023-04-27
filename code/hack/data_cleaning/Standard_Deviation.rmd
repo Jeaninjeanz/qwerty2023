@@ -1,0 +1,126 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r Setup}
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(factoextra)
+library(caret)
+```
+
+
+```{r}
+sNpData <- read_csv("all_stocks_5yrs.csv")
+
+sNpData <- na.omit(sNpData)
+```
+
+```{r}
+
+sNpData$date <- ymd(sNpData$date)
+head(sNpData)
+```
+
+```{r}
+#filtered to reduce datapoints while testing
+fData <- drop_na(sNpData) 
+fData
+```
+Finding the average price and creating a column
+```{r}
+#Finding the average price and creating a column
+fData <- fData %>% mutate(averagePrice = (open+close)/2)
+
+#count number of years in the dataset to make code neater + automation
+
+fData <- fData %>% 
+  group_by(Name) %>% 
+  mutate(yearAvg = (sum(averagePrice))/(365.25*5)) %>% 
+  mutate(yearVolumeAvg = (sum(volume))/(365.25*5))
+fData
+
+```
+
+Calculate the diff in average price, square the diff then sum the values
+```{r}
+fData <- fData %>% 
+  group_by(Name) %>% 
+  mutate(averagePrice = sum(((averagePrice - yearAvg)^2))) %>% 
+  mutate(averageVolume = sum(((volume - yearVolumeAvg)^2)))
+```
+find the squared varience and standard deviation
+
+```{r}
+#varience 
+fData <- fData %>% 
+  group_by(Name) %>% 
+  mutate(varience = (averagePrice/(365.25*5))) %>% 
+  mutate(volumeVarience = (averageVolume/(365.25*5)))
+
+fData
+
+#calculating the standard deviation
+fData <- fData %>% 
+  group_by(Name) %>% 
+  mutate(SD = sqrt(varience)) %>% 
+  mutate(SDvolume = sqrt(volumeVarience))
+fData
+
+summary(fData$SDvolume)
+```
+
+
+```{r}
+summary(fData$SD)
+summary(fData$SDvolume)
+
+price_SD_Q1 <- summary(fData$SD)[2]
+price_SD_mean <- summary(fData$SD)[4]
+
+volume_SD_Q1 <- summary(fData$SDvolume)[2]
+volume_SD_mean <- summary(fData$SDvolume)[4]
+
+
+#arbitrarily decided on these ranges to classify the risk
+
+riskData <- fData %>% 
+  mutate(riskClass = case_when(SD < price_SD_Q1  ~ "Low",
+                               SD >= price_SD_Q1 && SD <= price_SD_mean ~ "Medium",
+                               SD > price_SD_mean ~ "High")) %>% 
+  mutate(riskClass = as.factor(riskClass)) %>% 
+  mutate(Name = as.factor(Name))
+
+riskData <- riskData %>%
+  mutate(riskClasssd = case_when(SDvolume < volume_SD_Q1 ~ "Low",
+                               SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
+                               SDvolume > volume_SD_mean  ~ "High")) %>%
+  mutate(riskClasssd = as.factor(riskClasssd))
+riskData
+
+saveRDS(riskData,"riskData.rds")
+
+riskData2 <- riskData %>% 
+  mutate(riskClass = case_when(riskClass == "Low" ~ 1,
+                               riskClass == "Medium" ~ 2,
+                               riskClass == "High" ~ 3,
+                               riskClasssd == "Low" ~ 1,
+                               riskClasssd == "Medium" ~ 2,
+                               riskClasssd == "High" ~ 3)) %>% 
+  summarise(meancat = mean(riskClass), .groups = 'drop') %>% 
+  mutate(category1 = case_when(meancat <= 1.5 ~ "Low", meancat < 2.5 ~ "Medium", meancat >= 2.5 ~ "High")) %>% 
+  select(,-meancat)
+riskData2
+
+saveRDS(riskData2,"CompaniesRisk.rds")
+
+```
+
+
+
+
+

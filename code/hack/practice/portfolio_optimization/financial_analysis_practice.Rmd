@@ -1,0 +1,103 @@
+---
+title: "Financial Analysis Practice"
+output: html_notebook
+---
+
+```{r Setup}
+#install.packages('PortfolioAnalytics')
+library(PortfolioAnalytics)
+library(PerformanceAnalytics)
+library(quantmod)
+```
+```{r}
+#get stocks data 
+stocks <- lapply(c("AAPL","GOOG","MSFT"),
+           function(x) {getSymbols(x,
+              from = "2018/1/1",
+              to = "2023/1/1",
+              periodicity = "daily",
+              auto.assign = FALSE )} )
+
+names(stocks) <- c("AAPL","GOOG","MSFT")
+
+#filter to adjusted price
+adjustedPrices <- lapply(stocks, Ad)
+adjustedPrices <- do.call(merge, adjustedPrices)
+head(adjustedPrices)
+
+
+```
+```{r}
+stockReturns <- Return.calculate(adjustedPrices)[-1]
+head(stockReturns)
+```
+```{r}
+portfolioReturns <- Return.portfolio(stockReturns, c(0.33,0.33,0.33))
+portfolioReturnsMonthly <- Return.portfolio(stockReturns, c(0.33,0.33,0.33), rebalance_on = "months")
+
+head(portfolioReturns)
+head(portfolioReturnsMonthly)
+```
+```{r}
+allPortfolioReturns <- cbind(portfolioReturns, portfolioReturnsMonthly)
+colnames(allPortfolioReturns) <- c("Non-Rebalanced", "Monthly Rebalanced")
+table.AnnualizedReturns(allPortfolioReturns, Rf = 0.1/252)
+```
+
+```{r}
+portfolio1 <- portfolio.spec(assets = colnames((stockReturns)))
+portfolio1
+```
+```{r}
+portfolio1 <- add.constraint(portfolio1, type = "full_investment")
+portfolio1 <- add.constraint(portfolio1, type = "long_only")
+
+#additional constraints can be used, such as target turnover, target mean return, diversification, etc
+```
+
+```{r Mininimum Variance - Risk Adverse}
+portfolioMinVar <- portfolio1
+#minimize std deviation
+portfolioMinVar <- add.objective(portfolio = portfolioMinVar,
+                            type = "risk",
+                            name = "StdDev")
+
+portfolioMinVar
+```
+
+```{r Mean Variance - Greatest Risk Adjusted}
+portfolioMeanVar <- portfolio1
+#minimise std deviation
+portfolioMeanVar <- add.objective(portfolio = portfolioMeanVar,
+                             type = "risk",
+                             name = "StdDev")
+
+#maximise returns
+portfolioMeanVar <- add.objective(portfolio = portfolioMeanVar,
+                             type = "return",
+                             name = "mean")
+
+portfolioMeanVar
+```
+```{r Optimize} 
+set.seed(10260)
+
+print("Minimum Variance:")
+minVarOptimized <- optimize.portfolio(R = stockReturns,
+                                portfolio = portfolioMinVar,
+                                optimize_method = "random")
+minVarReturns <- Return.portfolio(stockReturns, weight = extractWeights(minVarOptimized), rebalance_on = "months")
+table.AnnualizedReturns(R = minVarReturns, Rf = 0.1/250)
+print("--------------------------------------------------------------")
+
+print("Mean Variance")
+meanVarOptimized <- optimize.portfolio(R = stockReturns,
+                                portfolio = portfolioMeanVar,
+                                optimize_method = "random")
+meanVarReturns <- Return.portfolio(stockReturns, weight = extractWeights(meanVarOptimized), rebalance_on = "months")
+optimisedPortfolioReturns <- cbind(minVarReturns, meanVarReturns)
+colnames(optimisedPortfolioReturns) <- c("Minimum Variance", "Mean Variance")
+table.AnnualizedReturns(R = optimisedPortfolioReturns, Rf = 0.1/252)
+print("--------------------------------------------------------------")
+```
+

@@ -1,0 +1,131 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r Setup}
+library(tidyverse)
+library(dplyr)
+library(readr)
+library(lubridate)
+library(ggplot2)
+library(grid)
+library(scales)
+library(caret)
+library(tseries)
+library(caTools)
+library(forecast)
+
+```
+
+```{r}
+sNpData <- read.csv("s&p500Data/all_stocks_5yr.csv")
+
+sNpData <- drop_na(sNpData)
+
+toSaveData <- sNpData
+```
+
+
+```{r}
+saveRDS(toSaveData, "LMdata.rds")
+```
+
+
+READING RDS
+```{r}
+LMdata <- readRDS("LMdata.rds")
+```
+
+
+```{r}
+closingData <- LMdata %>% 
+  group_by(Name) %>% 
+  filter(Name == "PCLN") %>% 
+  select(close)
+
+closingData
+
+```
+
+```{r}
+closingData_log <- log(closingData$close)
+head(closingData_log, n = 10)
+```
+```{r}
+plot(closingData_log, main = "log closingData chart")
+```
+
+```{r}
+acf_log <- acf(closingData_log, lag.max = 320)
+```
+
+```{r}
+pacf_log <- pacf(closingData_log, lag.max = 320)
+```
+
+```{r}
+closingData_diff <- diff(closingData_log, lag = 1)
+
+closingData_diff <- na.locf(closingData_diff, na.rm = TRUE,
+                     fromLast = TRUE)
+plot(closingData_diff)
+```
+Augmented Dickey Fuller Test
+```{r}
+adf <- adf.test(closingData_log, alternative = c("stationary", "explosive"), 
+                k = 0)
+adf
+```
+Based on the p-value being so low we can see it is not a stationary stock
+
+
+```{r}
+diff.acf <- acf(closingData$close)
+```
+```{r}
+diff.pacf <- pacf(closingData$close)
+```
+Splitting Training data
+```{r}
+train_data <- closingData$close[1:619029]
+```
+
+Building the ARIMA model
+```{r}
+set.seed(123)
+arima_model <- auto.arima(train_data, stationary = TRUE, ic = c("aicc", "aic", "bic"), 
+                          trace = TRUE)
+```
+ARIMA model summary
+```{r}
+summary(arima_model)
+```
+```{r}
+checkresiduals(arima_model)
+```
+From the above determined ARIMA (0,0,5) is best, fit model into training set
+```{r}
+arima <- arima(train_data, order = c(2, 1, 4))
+summary(arima)
+```
+forecasting for 100 days
+```{r }
+forecast1 <- forecast(arima, h = 300)
+plot(forecast1)
+```
+```{r}
+checkresiduals(arima)
+```
+
+```{r}
+forecast_2 <- forecast(arima, h = 100000)
+a <- ts(closingData_log)
+forecast_2 %>% autoplot() + autolayer(a)
+```
+
+
+
+
+
+
