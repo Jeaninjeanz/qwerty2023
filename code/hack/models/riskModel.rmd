@@ -12,7 +12,7 @@ library(modelsummary)
 
 #load data
 ```{r}
-riskData <- read_rds("riskData.rds")
+riskData <- read_rds("~/Desktop/qwerty2023/data/cleaned/riskData.rds")
 
 #filter to 1/10th to save computing power 2013-08-15
 # riskData <- riskData  %>% 

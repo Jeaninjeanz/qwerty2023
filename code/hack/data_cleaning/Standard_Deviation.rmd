@@ -15,7 +15,7 @@ library(caret)
 
 
 ```{r}
-sNpData <- read_csv("/data/raw/all_stocks_5yrs.csv")
+sNpData <- read_csv("~/Desktop/qwerty2023/data/raw/all_stocks_5yrs.csv")
 
 sNpData <- na.omit(sNpData)
 ```
@@ -74,52 +74,84 @@ fData
 summary(fData$SDvolume)
 ```
 
-
+#Historical risk
 ```{r}
-summary(fData$SD)
-summary(fData$SDvolume)
+fData2 <- fData %>%
+  ungroup() %>% 
+  mutate(risk1 = case_when(fData$`SD`< as.numeric(substring(summary(fData$`SD`)[2],-8)) ~ "1",
+                           fData$`SD`< as.numeric(substring(summary(fData$`SD`)[4],-8))~ "2",
+                           fData$`SD`>= as.numeric(substring(summary(fData$`SD`)[4],-8))~ "3")) %>% 
+  
+   mutate(risk2 = case_when(fData$`SDvolume`< as.numeric(substring(summary(fData$`SDvolume`)[2],-8)) ~ "1",
+                           fData$`SDvolume`< as.numeric(substring(summary(fData$`SDvolume`)[4],-8))~ "2",
+                           fData$`SDvolume`>= as.numeric(substring(summary(fData$`SDvolume`)[4],-8))~ "3")) %>% 
+  
+  mutate(risk1 = as.numeric(risk1)) %>% 
+  mutate(risk2 = as.numeric(risk2)) %>% 
+  
+  mutate(year = year(date))
 
-price_SD_Q1 <- summary(fData$SD)[2]
-price_SD_mean <- summary(fData$SD)[4]
+fData3 <- fData2 %>% 
+  mutate(riskAvg = (risk1 + risk2)/2 ) 
 
-volume_SD_Q1 <- summary(fData$SDvolume)[2]
-volume_SD_mean <- summary(fData$SDvolume)[4]
-
-
-#arbitrarily decided on these ranges to classify the risk
-
-riskData <- fData %>% 
-  mutate(riskClass = case_when(SD < price_SD_Q1  ~ "Low",
-                               SD >= price_SD_Q1 && SD <= price_SD_mean ~ "Medium",
-                               SD > price_SD_mean ~ "High")) %>% 
-  mutate(riskClass = as.factor(riskClass)) %>% 
-  mutate(Name = as.factor(Name))
-
-riskData <- riskData %>%
-  mutate(riskClasssd = case_when(SDvolume < volume_SD_Q1 ~ "Low",
-                               SDvolume > volume_SD_Q1 && SDvolume < volume_SD_mean ~ "Medium",
-                               SDvolume > volume_SD_mean  ~ "High")) %>%
-  mutate(riskClasssd = as.factor(riskClasssd))
-riskData
-
-saveRDS(riskData,"/data/cleaned/riskData.rds")
-
-riskData2 <- riskData %>% 
-  mutate(riskClass = case_when(riskClass == "Low" ~ 1,
-                               riskClass == "Medium" ~ 2,
-                               riskClass == "High" ~ 3,
-                               riskClasssd == "Low" ~ 1,
-                               riskClasssd == "Medium" ~ 2,
-                               riskClasssd == "High" ~ 3)) %>% 
-  summarise(meancat = mean(riskClass), .groups = 'drop') %>% 
-  mutate(category1 = case_when(meancat <= 1.5 ~ "Low", meancat < 2.5 ~ "Medium", meancat >= 2.5 ~ "High")) %>% 
-  select(,-meancat)
-riskData2
-
-saveRDS(riskData2,"/data/cleaned/CompaniesRisk.rds")
+fData3 <- fData3 %>% 
+  mutate(riskClass = case_when(riskAvg < as.numeric(substring(summary(fData3$`riskAvg`)[2],-8)) ~ "Low",
+                               riskAvg < as.numeric(substring(summary(fData3$`riskAvg`)[5],-8)) ~ "Medium",
+                               riskAvg >= as.numeric(substring(summary(fData3$`riskAvg`)[5],-8)) ~ "High"))
+summary(fData3$riskAvg)
+table(fData3$riskClass)
+saveRDS(fData3,"~/Desktop/qwerty2023/data/cleaned/riskData.rds")
 
 ```
 
+#Historical risk continued
+```{r}
+fData_categories <- fData2 %>% 
+  select( year, Name, risk1, risk2) %>% 
+  group_by(Name) %>% 
+  mutate(category = (mean(c(risk1, risk2))))
+
+fData_categories_final <- fData_categories %>% 
+  summarise(mean = mean(category), .groups = 'drop')
+
+fData_categories_final <- fData_categories_final %>% 
+  mutate(historicalRisk = case_when(mean <= as.numeric(substring(summary(fData_categories_final$`mean`)[2],-8))~ "Low",
+                               mean <= as.numeric(substring(summary(fData_categories_final$`mean`)[5],-8)) ~ "Medium",
+                               mean > as.numeric(substring(summary(fData_categories_final$`mean`)[5],-8)) ~ "High"))
+
+summary(fData_categories_final)
+table(fData_categories_final$historicalRisk)
+fData_categories_final
+
+saveRDS(fData_categories_final,"~/Desktop/qwerty2023/data/cleaned/HistoricalRisk.rds")
+```
+
+#Company risk
+```{r}
+
+#riskData2 <- riskData %>% 
+#  mutate(year = year(date)) %>% 
+#  select(year, Name, riskClass, riskClasssd) %>% 
+#  mutate(riskClass = case_when(riskClass == "Low" ~ 1,
+#                               riskClass == "Medium" ~ 2,
+#                               riskClass == "High" ~ 3,
+#                               riskClasssd == "Low" ~ 1,
+#                               riskClasssd == "Medium" ~ 2,
+#                               riskClasssd == "High" ~ 3)) %>% 
+#  summarise(meancat = mean(riskClass), .groups = 'drop') 
+
+riskData
+
+saveRDS(riskData2,"~/Desktop/qwerty2023/data/cleaned/CompaniesRisk.rds")
+
+```
+
+```{r}
+funData <- read_rds("~/Desktop/qwerty2023/data/cleaned/FundamentalDataCleaned.rds")
+fData4 <- fData3
+
+fData5 <- inner_join(funData,fData4,date)
+```
 
 
 
