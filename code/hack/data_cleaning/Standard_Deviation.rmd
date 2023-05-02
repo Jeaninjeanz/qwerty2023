@@ -15,7 +15,7 @@ library(caret)
 
 
 ```{r}
-sNpData <- read_csv("all_stocks_5yrs.csv")
+sNpData <- read_csv("/data/raw/all_stocks_5yrs.csv")
 
 sNpData <- na.omit(sNpData)
 ```
@@ -102,7 +102,7 @@ riskData <- riskData %>%
   mutate(riskClasssd = as.factor(riskClasssd))
 riskData
 
-saveRDS(riskData,"riskData.rds")
+saveRDS(riskData,"/data/cleaned/riskData.rds")
 
 riskData2 <- riskData %>% 
   mutate(riskClass = case_when(riskClass == "Low" ~ 1,
@@ -116,7 +116,7 @@ riskData2 <- riskData %>%
   select(,-meancat)
 riskData2
 
-saveRDS(riskData2,"CompaniesRisk.rds")
+saveRDS(riskData2,"/data/cleaned/CompaniesRisk.rds")
 
 ```
 
