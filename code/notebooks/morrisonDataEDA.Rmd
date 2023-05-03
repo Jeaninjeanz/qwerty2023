@@ -1,0 +1,124 @@
+---
+title: "Fundamental Data Cleaning"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(readr)
+library(lubridate)
+```
+
+
+#Cleaning
+```{r}
+rData <- read.csv("~/Desktop/qwerty2023/data/raw/MorrisonData_cleaning.csv")
+
+fData <- rData %>% 
+  mutate(CURRENT.RATIO = as.numeric(CURRENT.RATIO)) %>% 
+  mutate(PRICE.EARNINGS.RATIO = as.numeric(PRICE.EARNINGS.RATIO)) %>% 
+  mutate(RETURN.ON.INVESTED.CAPITAL = as.numeric(RETURN.ON.INVESTED.CAPITAL)) %>% 
+  mutate(TOTAL.DEBT.TO.TOTAL.ASSET = as.numeric(TOTAL.DEBT.TO.TOTAL.ASSET)) %>% 
+  mutate(TOTAL.DEBT.TO.TOTAL.EQUITY = as.numeric(TOTAL.DEBT.TO.TOTAL.EQUITY)) %>% 
+  mutate(TOTAL.DEBT.TO.TOTAL.EQUITY = as.numeric(TOTAL.DEBT.TO.TOTAL.EQUITY)) %>% 
+  mutate(RETURN.ON.ASSET.RATIO = as.numeric(RETURN.ON.ASSET.RATIO)) %>%   
+  mutate(Date = as.Date(Date))
+
+fData
+```
+
+#Statistical measures
+```{r}
+summary(fData)
+
+fData_NA_rm <- fData %>% 
+  drop_na()
+print("------------------------------------------------------------------------------------------------------")
+summary(fData_NA_rm)
+```
+#Assigning risk level
+```{r}
+fData_NA_rm_2 <- fData_NA_rm %>%
+  mutate(risk1 = case_when(fData_NA_rm$`CURRENT.RATIO`< as.numeric(substring(summary(fData_NA_rm$`CURRENT.RATIO`)[2],-8)) ~ "3",
+                           fData_NA_rm$`CURRENT.RATIO`< as.numeric(substring(summary(fData_NA_rm$`CURRENT.RATIO`)[4],-8))~ "2",
+                           fData_NA_rm$`CURRENT.RATIO`>= as.numeric(substring(summary(fData_NA_rm$`CURRENT.RATIO`)[4],-8))~ "1")) %>% 
+  
+   mutate(risk2 = case_when(fData_NA_rm$`PRICE.EARNINGS.RATIO`< as.numeric(substring(summary(fData_NA_rm$`PRICE.EARNINGS.RATIO`)[2],-8)) ~ "1",
+                           fData_NA_rm$`PRICE.EARNINGS.RATIO`< as.numeric(substring(summary(fData_NA_rm$`PRICE.EARNINGS.RATIO`)[4],-8))~ "2",
+                           fData_NA_rm$`PRICE.EARNINGS.RATIO`>= as.numeric(substring(summary(fData_NA_rm$`PRICE.EARNINGS.RATIO`)[4],-8))~ "3")) %>% 
+  
+  mutate(risk3 = case_when(fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`< as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`)[2],-8)) ~ "3",
+                           fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`<= as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`)[4],-8))~ "2",
+                           fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`> as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.INVESTED.CAPITAL`)[4],-8))~ "1")) %>% 
+  
+  mutate(risk4 = case_when(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`< as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`)[2],-8)) ~ "1",
+                           fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`< as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`)[4],-8))~ "2",
+                           fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`>= as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.ASSET`)[4],-8))~ "3")) %>%
+  
+  mutate(risk5 = case_when(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`< as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`)[2],-8)) ~ "1",
+                           fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`< as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`)[4],-8))~ "2",
+                           fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`>= as.numeric(substring(summary(fData_NA_rm$`TOTAL.DEBT.TO.TOTAL.EQUITY`)[4],-8))~ "3")) %>% 
+  
+  mutate(risk6 = case_when(fData_NA_rm$`RETURN.ON.ASSET.RATIO`< as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.ASSET.RATIO`)[2],-8)) ~ "3",
+                           fData_NA_rm$`RETURN.ON.ASSET.RATIO`< as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.ASSET.RATIO`)[4],-8))~ "2",
+                           fData_NA_rm$`RETURN.ON.ASSET.RATIO`>= as.numeric(substring(summary(fData_NA_rm$`RETURN.ON.ASSET.RATIO`)[4],-8))~ "1")) %>% 
+  
+  mutate(risk1 = as.numeric(risk1)) %>% 
+  mutate(risk2 = as.numeric(risk2)) %>% 
+  mutate(risk3 = as.numeric(risk3)) %>% 
+  mutate(risk4 = as.numeric(risk4)) %>% 
+  mutate(risk5 = as.numeric(risk5)) %>% 
+  mutate(risk6 = as.numeric(risk6)) %>% 
+  
+  mutate(year = year(Date))
+```
+
+#Assigning categories
+```{r}
+fData_categories <- fData_NA_rm_2 %>% 
+  group_by(Name) %>% 
+  mutate(category = (mean(c(risk1, risk2, risk3, risk4, risk5, risk6))))
+head(fData_categories)
+```
+#Categories continued
+```{r}
+fData_categories_final <- fData_categories %>% 
+  summarise(meancat = mean(category), .groups = 'drop')
+
+fData_categories_final <- fData_categories_final %>% 
+  mutate(category1 = case_when(meancat <= as.numeric(substring(summary(fData_categories_final$`meancat`)[2],-8))~ "Low",
+                               meancat <= as.numeric(substring(summary(fData_categories_final$`meancat`)[5],-8)) ~ "Medium",
+                               meancat > as.numeric(substring(summary(fData_categories_final$`meancat`)[5],-8)) ~ "High"))
+fData_categories_final
+```
+
+```{r}
+summary(fData_categories_final)
+table(fData_categories_final$category1)
+```
+
+```{r}
+saveRDS(fData_categories_final, "~/Desktop/qwerty2023/data/cleaned/FundamentalCompanyRisk.rds")
+```
+
+
+```{r}
+fData2_categories2 <- fData_NA_rm_2 %>% 
+  group_by(Name) %>% 
+  mutate(category = (mean(c(risk1, risk2, risk3, risk4, risk5, risk6))))
+head(fData2_categories2)
+```
+```{r}
+fData_categories_final3 <- fData2_categories2 %>% 
+  select(everything()) %>% 
+  mutate(meancat = (risk1 + risk2 + risk3 + risk4 + risk5 + risk6)/6 ) 
+
+fData_categories_final3 <- fData_categories_final3 %>% 
+  mutate(category1 = case_when(meancat <= as.numeric(substring(summary(fData_categories_final3$`meancat`)[2],-8))~ "Low",
+                               meancat <= as.numeric(substring(summary(fData_categories_final3$`meancat`)[5],-8)) ~ "Medium",
+                               meancat > as.numeric(substring(summary(fData_categories_final3$`meancat`)[5],-8)) ~ "High"))
+head(fData_categories_final3)
+
+saveRDS(fData_categories_final3, "~/Desktop/qwerty2023/data/cleaned/FundamentalDataCleaned.rds")
+
+```
+
