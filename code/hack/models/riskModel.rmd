@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Historical Risk Classifer"
 output: html_notebook
 ---
 
@@ -19,7 +19,7 @@ riskData <- read_rds("~/Desktop/qwerty2023/data/cleaned/riskData.rds")
 #   filter(date < "2015-08-15")
 
 riskData <- riskData %>% 
-  select(open, high, low, close, volume, SD, riskClass)
+  select(open, high, low, close, volume, SD, SDvolume, riskClass)
 
 riskData <- riskData[-1]
 

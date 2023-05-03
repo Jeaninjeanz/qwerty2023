@@ -1,5 +1,5 @@
 ---
-title: "R Notebook"
+title: "Historical Risk Cleaning"
 output: html_notebook
 ---
 
@@ -125,34 +125,3 @@ fData_categories_final
 
 saveRDS(fData_categories_final,"~/Desktop/qwerty2023/data/cleaned/HistoricalRisk.rds")
 ```
-
-#Company risk
-```{r}
-
-#riskData2 <- riskData %>% 
-#  mutate(year = year(date)) %>% 
-#  select(year, Name, riskClass, riskClasssd) %>% 
-#  mutate(riskClass = case_when(riskClass == "Low" ~ 1,
-#                               riskClass == "Medium" ~ 2,
-#                               riskClass == "High" ~ 3,
-#                               riskClasssd == "Low" ~ 1,
-#                               riskClasssd == "Medium" ~ 2,
-#                               riskClasssd == "High" ~ 3)) %>% 
-#  summarise(meancat = mean(riskClass), .groups = 'drop') 
-
-riskData
-
-saveRDS(riskData2,"~/Desktop/qwerty2023/data/cleaned/CompaniesRisk.rds")
-
-```
-
-```{r}
-funData <- read_rds("~/Desktop/qwerty2023/data/cleaned/FundamentalDataCleaned.rds")
-fData4 <- fData3
-
-fData5 <- inner_join(funData,fData4,date)
-```
-
-
-
-

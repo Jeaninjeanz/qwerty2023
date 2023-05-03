@@ -1,0 +1,59 @@
+---
+title: "RDS Aggregation"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+fundamentalData <- readRDS("~/Desktop/qwerty2023/data/cleaned/FundamentalCompanyRisk.rds")
+historicalData <- readRDS("~/Desktop/qwerty2023/data/cleaned/HistoricalRisk.rds")
+
+```
+
+```{r}
+fundamentalData$Name <- stringr::str_trim(fundamentalData$Name)
+historicalData$Name <- stringr::str_trim(historicalData$Name)
+
+merged <- historicalData %>% 
+  left_join(fundamentalData,
+            by = "Name")
+
+merged
+```
+
+```{r}
+merged1 <- merged %>% 
+  select(-historicalRisk, - category1)
+merged1
+```
+```{r}
+merged1 <- merged1 %>% 
+  mutate(finalRisk = (mean + meancat)/2)
+merged1
+```
+
+```{r}
+
+merged1 <- merged1 %>% 
+  mutate(categoryLevel = case_when(meancat <= as.numeric(substring(summary(merged1$`finalRisk`)[2],-8))~ "Low",
+                               meancat < as.numeric(substring(summary(merged1$`finalRisk`)[5],-8))~ "Medium",
+                               meancat >= as.numeric(substring(summary(merged1$`finalRisk`)[5],-8))~ "High"))
+merged1
+```
+
+```{r}
+summary(merged1)
+table(merged1$categoryLevel)
+```
+```{r}
+merged2 <- merged1 %>% 
+  mutate(historicalRisk = mean) %>% 
+  mutate(fundamentalRisk = meancat) %>% 
+  select(Name, categoryLevel, historicalRisk, fundamentalRisk)
+merged2
+saveRDS(merged1, "~/Desktop/qwerty2023/data/cleaned/FinalRisk.rds")
+```
+
