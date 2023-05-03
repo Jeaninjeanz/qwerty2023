@@ -53,13 +53,14 @@ app_header <- flexPanel(
   #  selectInput("Fake-Select", label = "",
   #             choices = list("Trust" = 1), selected = 1),
              #  style = "width: 10%;"),
-    actionButton("submitbutton", "LOG OUT", 
-                class = "btn btn-primary",
-                style = "border-radius: 2px; background-color: #004b8d; display: inline-bloack"),
-    style = ""
+    #actionButton("submitbutton", "LOG OUT", 
+     #           class = "btn btn-primary",
+      #          style = "border-radius: 2px; background-color: #004b8d; display: inline-bloack"),
+   # CommandBar(items = header_commandbar_list),
+    # style = "background-color: #004b8d; width: 10vw; height: 5vh;"
   ),
   CommandBar(items = header_commandbar_list),
-  tags$hr(style = "width: 100%; position: absolute; top: 9%;"),
+ tags$hr(style = "width: 100%; position: absolute; top: 9%;"),
 
   div(
     Text(variant = "small", "HOME",
@@ -86,24 +87,25 @@ app_header <- flexPanel(
   ),
  
   tags$hr(style = "width: 100%; position: absolute; top: 16%;"),
-  img(src = "family3.png", style = "height: 65%; margin-top: 44.7%; right: 150px; width: 100vw;
+  img(src = "family3.png", style = "height: 65%; margin-top: 43.7%; right: 150px; width: 100vw;
       position: absolute; left: -10px"),
   div(
     Text(variant = "xLarge", "Trust your future to Discovery", style="color: white; font-size: 5vh;"), 
             style = "position: absolute; top: -23%; left: 33%; font-size: 70vh;"),
   div(
     Text(variant = "medium", "Prepare for your and your loved ones' future by investing today", 
-         style = "color: #292b2c; position: absolute; left: 21%; top: 90%; font-size: 4vh;"),
+         style = "color: #292b2c; position: absolute; left: 21%; top: 92%; font-size: 4vh;"),
     Text(variant = "small", "Use your Vitality points or Discovery Bank account to invest in personalised portfolios created by Discovery's Artificial Intelligence Investment Model.", 
-         style = "position: absolute; left: 7%; top: 98%; font-size: 2.6vh;")
+         style = "position: absolute; left: 7%; top: 100%; font-size: 2.6vh;")
   )
+ 
 )
 
 app_sidebar <- flexPanel( #flexPanel
   id = "sidebar",
   align_items = "center",
   style = "background-color: white; justify-content: center; width: 100vw; height: 200vh;",
-  div(style = "background-color: #f5f5f5; position: absolute; height: 100vh; width: 100vw;
+  div(style = "background-color: #f5f5f5; position: absolute; height: 110vh; width: 100vw;
       top: 120vh; left: 0; z-index: 900;"),
   div(
     Text(variant = "xLarge", "Welcome back,", 
@@ -147,9 +149,10 @@ app_content <- flexPanel(
   style = "height: 200vh;",
   #tags$label(h3('We would recommend...')) # Status/Output Text Box
   div(
-    style = "position: absolute; top: 140vh; left: 2vw; background-color: white; z-index: 950; height: 65vh; width: 55vw;",
+    style = "position: absolute; top: 140vh; right: 5vw; background-color: white; z-index: 950; height: 65vh; width: 55vw;",
     verbatimTextOutput('contents'),
-    tableOutput('tabledata') # Prediction results table
+    tableOutput('tabledata'), # Prediction results table
+    
   )
 )
 
@@ -158,36 +161,38 @@ app_footer <- flexPanel(
   style = "border-top-style: solid; border-color: #F5F5F5; border-width: 1.5px; margin-left: 40px"
 )
 
-# Updating ui content
+#########################################################################
+        #Updating ui content
 #ui <- gridPage(
 #  tags$head(tags$link(rel="stylesheet", href = "styles.css")),
 #  template = "grail-left-sidebar",
-  #grail-left-sidebar
- # gap = "10px",
+              #grail-left-sidebar
+#  gap = "10px",
 #  rows = list(
 #    default = "70px 1fr 30px"
 #  ),
   
 #  header = app_header,
- 
 
-  #sidebar = div("This is the sidebar", style = "background-color: blue;"),
-  #content = div("This is the content", style = "background-color: green; float:right"),
+
+#  sidebar = div("This is the sidebar", style = "background-color: blue;"),
+#  content = div("This is the content", style = "background-color: green; float:right"),
 #  content = app_content,
 #  sidebar = app_sidebar,
 #  footer = app_footer
-  #footer = div("This is the footer", style = "background-color: yellow;")
+          #footer = div("This is the footer", style = "background-color: yellow;")
 #)
 
-ui <- pageWithSidebar(
+###########################################################################
+ui <- pageWithSidebar( #fluidPage
   
   # tags$head(
   # tags$style(HTML("*{ background-color: red; }"),
   #  ),
   # Page header
-  headerPanel('DiscoveryTrust'),
+ # headerPanel('DiscoveryTrust'),
   #headerPanel <- app_header,
- # headerPanel(app_header),
+  flexPanel(app_header),
   
   
   # Input values
@@ -212,7 +217,7 @@ ui <- pageWithSidebar(
    #              class = "btn btn-primary")
   #),
  
- sidebarPanel(app_sidebar),
+ flexPanel(app_sidebar),
   
 #  mainPanel(
 #    tags$label(h3('We would recommend...')), # Status/Output Text Box
@@ -220,8 +225,66 @@ ui <- pageWithSidebar(
 #    tableOutput('tabledata') # Prediction results table
     
 #  )
-  mainPanel(app_content)
+  flexPanel(app_content)
 )
+
+#Tui <- dashboardPage(app_header, app_sidebar, app_content)
+  
+  # tags$head(
+  # tags$style(HTML("*{ background-color: red; }"),
+  #  ),
+  # Page header
+  #titlePanel('DiscoveryTrust'),
+  #headerPanel <- app_header,
+  # titlePanel(app_header),
+  #fluidRow("app_header"),
+  
+ # titlePanel("app_header")
+  #sidebarLayout(
+#    position = "left",
+#    sidebarPanel(
+#      "sidebar panel",
+#      app_sidebar
+#    ),
+#    mainPanel(app_content)
+#  )
+
+  
+  
+  # Input values
+  #sidebarPanel(
+  #HTML("<h3>Input parameters</h3>"),
+  # tags$label(h3('Input parameters')),
+  # radioButtons("Radio.Money", label = "",
+  #              choices = list("Stocks" = 1), 
+  #              inline = TRUE, selected = 1),
+  # numericInput("Invest.Amount", 
+  #              label = "How many stocks would you like to buy?", 
+  #              value = 0),
+  # selectInput("Risk.Category", label = "Choose a risk category",
+  #             choices = list("Low Risk" = 1, "Medium Risk" = 2,
+  #                            "High Risk" = 3), selected = 1),
+  # selectInput("Prediction.Period", label = "Choose a prediction period",
+  #             choices = list("1 year" = 1, "2 years" = 2,
+  #                            "3 years" = 3, "4 years" = 4,
+  #                            "5 years" = 5), selected = 1),
+  
+  #actionButton("submitbutton", "Recommendations", 
+  #              class = "btn btn-primary")
+  #),
+  
+  #fluidRow(
+  #  sidebarPanel(app_sidebar),
+    
+    #  mainPanel(
+    #    tags$label(h3('We would recommend...')), # Status/Output Text Box
+    #    verbatimTextOutput('contents'),
+    #    tableOutput('tabledata') # Prediction results table
+    
+    #  )
+   # mainPanel(app_content)
+  #)
+#)
 
 #############################################################################################
 
@@ -259,6 +322,16 @@ server<- function(input, output, session) {
    # validate(
    #   need(try(as.integer(input$Radio.Money) == 2 && as.integer(input$Invest.Amount > 1345)), "Error")
    # )
+    radioMoney <<- input$Radio.Money
+    amount <<- input$Invest.Amount
+    years <<- input$Prediction.Period
+    
+    
+    if (input$Radio.Money == 2) {
+      amount = as.integer(input$Invest.Amount) / 20;
+    }
+    
+   
     
      # userPaymentSelection(input$Radio.Money, input$Invest.Amount)
       finalfinal <- userRiskSelection(input$Risk.Category)
@@ -309,7 +382,8 @@ server<- function(input, output, session) {
     userSelection <- as.numeric(S)
     #userSelection = 2
     #finalSelection = "Medium"
-    category2 <- smallRiskData$category1
+    #category2 <- smallRiskData$category1
+    print(1)
     final_companies <<- data.frame(name = character(), stringsAsFactors = FALSE)
     
     if (userSelection == 1) {
@@ -320,7 +394,39 @@ server<- function(input, output, session) {
       finalSelection = "High"
     }
     
+    print(12)
+    risky <- readRDS('FinalRisk.rds')
+    risky <- as.data.frame(risky)
     
+    preproc <- readRDS('Complete_Data.rds')
+    
+    preproc <- as.data.frame(preproc) 
+    work <- preproc
+    
+    print(123)
+    risky <- risky[1:6,]
+    
+    risky <- risky %>% 
+      filter(categoryLevel == finalSelection) %>% 
+      select(Name, categoryLevel)
+    
+    ww <- data.frame()
+    
+    print(1234)
+    for(i in 1:nrow(risky)) {       # for-loop over rows
+      for (j in 1:nrow(work)) {
+        if (work[j, 1] == risky[i, 1]) {
+          ww <- rbind(ww, work[j,])
+          #ww[nrow(ww) + 1,] <- work[j,]
+         # break
+        } 
+      }
+    }
+    
+    work <- ww
+    print(12345)
+    #final <- cbind(work, risky)
+    #}
     # for (i in 1:length(hard)){
     
     #  if (finalSelection == category2[i]){
@@ -328,29 +434,237 @@ server<- function(input, output, session) {
     # final_companies <- rbind(final_companies, smallRiskData$share[i])
     #  }
     # }
-
-    
+  
   #  test <- hard %>% 
    # df2 <- hard[order(hard$difference, decreasing = TRUE),]
     
-    hard <- read.csv("hard.csv")
+  #  hard <- read.csv("hard.csv")
     
-    hard <- hard %>% 
-      filter(hard$risk == finalSelection)  
+  #  work <- work %>% 
+  #    filter(work$risk == finalSelection)  
       
-    hard <- hard[order(hard$difference, decreasing = TRUE),]
+    ######## here
     
+  #  hard <- hard %>% 
+  #    filter(hard$risk == finalSelection)  
+    
+  #  hard <- hard[order(hard$difference, decreasing = TRUE),]
+    
+    #amount = 5000
+    
+  #  hard <- hard %>% 
+   #   mutate(maxDiff = max(hard$difference)) %>% 
+    #  ###filter(hard$difference == maxDiff) %>% 
+      ###head(hard, 1) %>% 
+    #  mutate(AmountDue = closing * amount) %>% 
+     # mutate(AmountMade = (difference * amount) - AmountDue) %>% 
+      #select(name, closing, risk, AmountDue, AmountMade)
+
+   # if (years )
+    #amount = 3
+    #years = 1
     #differenceHard <- summary(hard)[6,3]
     
-    hard <- hard %>% 
-      mutate(maxDiff = max(hard$difference)) %>% 
-      #filter(hard$difference == maxDiff) %>% 
-      #head(hard, 1) %>% 
-      mutate(AmountDue = closing * 5) %>% 
-      mutate(AmountMade = (difference * 5) - AmountDue) %>% 
-      select(name, closing, risk, AmountDue, AmountMade)
+    if (radioMoney == 1) {  #stocks
+      if (years == 1) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "1") %>% 
+          mutate(AmountDue = Buy.in.Price * amount) 
+        
+        work$Difference <- (work$"1" * amount)
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+         # mutate(Difference = "1") %>% 
+         # mutate(Difference = Difference - Buy.in.Price) %>% 
+          #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 2) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "2") %>% 
+          mutate(AmountDue = Buy.in.Price * amount) 
+        
+        work$Difference <- (work$"2" * amount)
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+        
+      } else if (years == 3) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "3") %>% 
+          mutate(AmountDue = Buy.in.Price * amount) 
+        
+        work$Difference <- (work$"3" * amount)
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+        
+      } else if (years == 4) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "4") %>% 
+          mutate(AmountDue = Buy.in.Price * amount) 
+        
+        work$Difference <- (work$"4" * amount)
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+        
+      } else if (years == 5) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "5") %>% 
+          mutate(AmountDue = Buy.in.Price * amount) 
+        
+        work$Difference <- (work$"5" * amount)
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+        
+      }
+      
+    } else if (radioMoney == 2) {  #points
+      if (years == 1) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "1") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"1" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)
+          #mutate(AmountDue = Buy.in.Price * amount) #%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 2) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "2") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"2" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 3) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "3") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"3" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue) #%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 4) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "4") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"4" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 5) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "5") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"5" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      }
+    } else if (radioMoney == 3) {   #rands
+      if (years == 1) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "1") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"1" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 2) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "2") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"2" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 3) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "3") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"3" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue)#%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 4) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "4") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+        mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"4" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue) #%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      } else if (years == 5) {
+        work <- work %>% 
+          select(Name, Buy.in.Price, "5") %>% 
+          mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
+        
+        work$Difference <- work$"5" * amount
+        
+        work <- work %>% 
+          mutate(Difference = Difference - AmountDue) #%>% 
+        # mutate(Difference = "1") %>% 
+        # mutate(Difference = Difference - Buy.in.Price) %>% 
+        #mutate(AmountMade = (Difference * amount) - AmountDue) 
+      }
+    }
     
-    hard <- hard[1:3,]
+    print(123456)
+    colnames(work)[5] <- "Profit"
+    work <- work %>% 
+      
+    hard <- work
+    hard <- work[order(work$Profit, decreasing = TRUE),]
+   #hard <- work
+   # hard <- hard[1:3,]
     print(hard)
     #dbWriteTable(con, "qwerty_risk", final_companies, overwrite = TRUE)
     # result <- dbGetQuery(con, "SELECT * FROM qwerty_risk")
@@ -358,6 +672,8 @@ server<- function(input, output, session) {
     #companies
     #print(length(dim(hard)))
   }
+  
+  
   
   # DOUG CODE
   #test_object <<- getSymbols("GOOG",from = "2011-01-01",to = "2021-03-31", auto.assign = FALSE)
@@ -428,3 +744,4 @@ server<- function(input, output, session) {
 
 shinyApp(ui = ui, server = server)
 #runApp(ui, server)
+
