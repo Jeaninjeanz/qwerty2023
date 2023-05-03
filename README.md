@@ -69,12 +69,12 @@ Friday 15:00 - Sunday 11:00
 - close
 - std deviation (volatility)
 - volume
-- price/cashflow *
-- return on invested capital *
-- quick ratio *
-- current ratio *
-- debt/assets + longterm *
-- debt/equity + longterm *
+- CURRENT RATIO
+- PRICE EARNINGS RATIO
+- RETURN ON INVESTED CAPITAL
+- TOTAL DEBT TO TOTAL ASSET
+- TOTAL DEBT TO TOTAL EQUITY
+- RETURN ON ASSET RATIO
 
 ## recommendation output
 - stock(s)
@@ -82,16 +82,8 @@ Friday 15:00 - Sunday 11:00
 - stock info *
 - risk level
 
-# future implementations
-- weighted risk model
-- weighted forecast model
-- more datasets 
-- cloud computing to train models
-- advanced user input/output
-
-
 # models
-- risk classifier using repeated cross-validation (k-nearest neighbours)
+- risk classifier using repeated cross-validation (k-nearest neighbours) for fundamental and technical data
 - forecast models using the Generalized Autoregressive Conditional Heteroskedasticity (GARGCH) model
 
 # R libraries:
