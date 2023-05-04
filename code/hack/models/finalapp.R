@@ -8,6 +8,7 @@ library(leaflet)
 library(glue)
 library(purrr)
 library(data.table)
+library(shinyjs)
 #library(RODBC)
 #library(RMySQL)
 library(RPostgreSQL)
@@ -177,17 +178,23 @@ app_sidebar <- flexPanel( #flexPanel
 )
 
 app_content <- flexPanel(
+  useShinyjs(),
   id = "content",
   style = "height: 200vh;",
   div(
     style = "position: absolute; top: 140vh; right: 5vw; background-color: white; z-index: 950; height: 65vh; width: 55vw;",
     verbatimTextOutput('contents'),
     tableOutput('tabledata'), # Prediction results table
-    div(
-      style = "z-index: 950; width: 7vw; height: 5vh; background-color: #004b8d; position: absolute;
-      right: 5vw; bottom: 1vh; "
+    #hide(
+      div(id = "invest",
+        style = "z-index: 900; width: 7vw; height: 5vh; background-color: #004b8d; position: absolute;
+        right: 5vw; bottom: 1vh; border-radius: 5px;",
+        h4("Invest",
+           style = "z-index: 955; width: 6vw; height: 4vh;  position: absolute;
+             right: 0vw; bottom: -2vh; color: white;")
+      )
     )
-  )
+ # )
 )
 
 app_footer <- flexPanel(
@@ -206,6 +213,7 @@ ui <- pageWithSidebar(
 #############################################################################################
 
 server<- function(input, output, session) {
+  hide(id = "invest")
   # Input Data
   datasetInput <- reactive({  
     
@@ -219,6 +227,12 @@ server<- function(input, output, session) {
                              input$Risk.Category,
                              input$Prediction.Period)),
       stringsAsFactors = FALSE)
+    
+    observeEvent(input$submitbutton, {
+      showElement(
+        id = "invest"
+      )
+    })
     
     wa <<- input$Invest.Amount
     radioMoney <<- input$Radio.Money
