@@ -183,7 +183,10 @@ app_content <- flexPanel(
     style = "position: absolute; top: 140vh; right: 5vw; background-color: white; z-index: 950; height: 65vh; width: 55vw;",
     verbatimTextOutput('contents'),
     tableOutput('tabledata'), # Prediction results table
-    
+    div(
+      style = "z-index: 950; width: 7vw; height: 5vh; background-color: #004b8d; position: absolute;
+      right: 5vw; bottom: 1vh; "
+    )
   )
 )
 
@@ -263,6 +266,7 @@ server<- function(input, output, session) {
     
     work <- ww
     print(12345)
+    #amount <- 10
  
     if (radioMoney == 1) {  #stocks
       if (years == 1) {
@@ -373,7 +377,7 @@ server<- function(input, output, session) {
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
-        
+     
       }
       colnames(work)[6] <- "Profit"
       
@@ -436,10 +440,174 @@ server<- function(input, output, session) {
         
       colnames(work)[6] <- "Profit"
     }
-      
+     
     hard <- work
     hard <- work[order(work$Profit, decreasing = TRUE),]
     hard <- hard[1:3,]
+    
+    first_amount <- floor((amount/3)*0.4)
+    second_amount <- floor((amount/3)*0.3)
+    
+ # secondary manipulation
+    if (radioMoney == 1) {
+      if (years == 1) {
+        hard[1,] <- hard[1, ] %>% 
+          mutate(AmountDue = Buy.in.Price * first_amount) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* first_amount) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* first_amount) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* first_amount) - AmountDue)
+        
+      } else if (years == 2) {
+        hard[1,] <- hard[1, ] %>% 
+          mutate(AmountDue = Buy.in.Price * first_amount) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* first_amount) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* first_amount) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* first_amount) - AmountDue)
+        
+      } else if (years == 3) {
+        hard[1,] <- hard[1, ] %>% 
+          mutate(AmountDue = Buy.in.Price * first_amount) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* first_amount) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* first_amount) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* first_amount) - AmountDue)
+        
+      } else if (years == 4) {
+        hard[1,] <- hard[1, ] %>% 
+          mutate(AmountDue = Buy.in.Price * first_amount) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* first_amount) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* first_amount) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* first_amount) - AmountDue)
+        
+      }else if (years == 5) {
+        hard[1,] <- hard[1, ] %>% 
+          mutate(AmountDue = Buy.in.Price * first_amount) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* first_amount) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* first_amount) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* first_amount) - AmountDue)
+      }
+      
+    } else if (radioMoney == 2 | radioMoney == 3) {
+      if (years == 1) {
+          hard[1,] <- hard[1, ] %>%
+          mutate(Number.of.Stocks = floor(first_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* Number.of.Stocks) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* Number.of.Stocks) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.1`)* Number.of.Stocks) - AmountDue)
+        
+      } else if (years == 2) {
+        hard[1,] <- hard[1, ] %>%
+          mutate(Number.of.Stocks = floor(first_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* Number.of.Stocks) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* Number.of.Stocks) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.2`)* Number.of.Stocks) - AmountDue)
+        
+      } else if (years == 3) {
+        hard[1,] <- hard[1, ] %>%
+          mutate(Number.of.Stocks = floor(first_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* Number.of.Stocks) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* Number.of.Stocks) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.3`)* Number.of.Stocks) - AmountDue)
+        
+      }else if (years == 4) {
+        hard[1,] <- hard[1, ] %>%
+          mutate(Number.of.Stocks = floor(first_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* Number.of.Stocks) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* Number.of.Stocks) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.4`)* Number.of.Stocks) - AmountDue)
+        
+      }else if (years == 5) {
+        hard[1,] <- hard[1, ] %>%
+          mutate(Number.of.Stocks = floor(first_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* Number.of.Stocks) - AmountDue)
+        
+        hard[2,] <- hard[2, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* Number.of.Stocks) - AmountDue)
+        
+        hard[3,] <- hard[3, ] %>% 
+          mutate(Number.of.Stocks = floor(second_amount / Buy.in.Price)) %>%
+          mutate(AmountDue = Buy.in.Price * Number.of.Stocks) %>% 
+          mutate(Profit = (as.integer(`Year.5`)* Number.of.Stocks) - AmountDue)
+      }
+    }
     
     return(hard)
   }
@@ -491,3 +659,4 @@ shinyApp(ui = ui, server = server)
 #runApp(ui, server)
 
 #dbDisconnect(con)
+
