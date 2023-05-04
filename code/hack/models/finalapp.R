@@ -56,7 +56,7 @@ tryCatch({
 #dbWriteTable(con, "qwerty_risk", risk_data, overwrite = TRUE)
 
 # prediction
-#prediction_data <- readRDS('Complete_Data.rds')
+#prediction_data <- readRDS('final_forecast_data.rds')
 #prediction_data <- as.data.frame(prediction_data) 
 
 #dbWriteTable(con, "qwerty_prediction", prediction_data, overwrite = TRUE)
@@ -242,7 +242,7 @@ server<- function(input, output, session) {
       finalSelection = "High"
     }
     
-    risky <- risky[1:6,]
+    #risky <- risky[1:6,]
     
     risky <- risky %>% 
       filter(categoryLevel == finalSelection) %>% 
@@ -267,50 +267,50 @@ server<- function(input, output, session) {
     if (radioMoney == 1) {  #stocks
       if (years == 1) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "1") %>% 
+          select(Name, Buy.in.Price, `Year.1`) %>% 
           mutate(AmountDue = Buy.in.Price * amount) 
         
-        work$Difference <- (as.integer(work$"1") * amount)
+        work$Difference <- (as.integer(work$`Year.1`) * amount)
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 2) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "2") %>% 
+          select(Name, Buy.in.Price, `Year.2`) %>% 
           mutate(AmountDue = Buy.in.Price * amount) 
         
-        work$Difference <- (as.integer(work$"2") * amount)
+        work$Difference <- (as.integer(work$`Year.2`) * amount)
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 3) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "3") %>% 
+          select(Name, Buy.in.Price, `Year.3`) %>% 
           mutate(AmountDue = Buy.in.Price * amount) 
         
-        work$Difference <- (as.integer(work$"3") * amount)
+        work$Difference <- (as.integer(work$`Year.3`) * amount)
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 4) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "4") %>% 
+          select(Name, Buy.in.Price, `Year.4`) %>% 
           mutate(AmountDue = Buy.in.Price * amount) 
         
-        work$Difference <- (as.integer(work$"4") * amount)
+        work$Difference <- (as.integer(work$`Year.4`) * amount)
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 5) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "5") %>% 
+          select(Name, Buy.in.Price, `Year.5`) %>% 
           mutate(AmountDue = Buy.in.Price * amount) 
         
-        work$Difference <- (as.integer(work$"5") * amount)
+        work$Difference <- (as.integer(work$`Year.5`) * amount)
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
@@ -321,55 +321,55 @@ server<- function(input, output, session) {
     } else if (radioMoney == 2) {  #points
       if (years == 1) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "1") %>% 
+          select(Name, Buy.in.Price, `Year.1`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"1") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.1`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 2) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "2") %>% 
+          select(Name, Buy.in.Price, `Year.2`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"2") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.2`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 3) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "3") %>% 
+          select(Name, Buy.in.Price, `Year.3`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"3") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.3`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 4) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "4") %>% 
+          select(Name, Buy.in.Price, `Year.4`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"4") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.4`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 5) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "5") %>% 
+          select(Name, Buy.in.Price, `Year.5`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"5") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.5`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
@@ -380,55 +380,55 @@ server<- function(input, output, session) {
     } else if (radioMoney == 3) {   #rands
       if (years == 1) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "1") %>% 
+          select(Name, Buy.in.Price, `Year.1`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"1") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.1`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 2) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "2") %>% 
+          select(Name, Buy.in.Price, `Year.2`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"2") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.2`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 3) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "3") %>% 
+          select(Name, Buy.in.Price, `Year.3`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price))  %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"3") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.3`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue)
         
       } else if (years == 4) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "4") %>% 
+          select(Name, Buy.in.Price, `Year.4`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
         mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"4") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.4`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue) 
         
       } else if (years == 5) {
         work <- work %>% 
-          select(Name, Buy.in.Price, "5") %>% 
+          select(Name, Buy.in.Price, `Year.5`) %>% 
           mutate(Number.of.Stocks = floor(amount / Buy.in.Price)) %>% 
           mutate(AmountDue = Buy.in.Price * Number.of.Stocks)
         
-        work$Difference <- as.integer(work$"5") * work$Number.of.Stocks
+        work$Difference <- as.integer(work$`Year.5`) * work$Number.of.Stocks
         
         work <- work %>% 
           mutate(Difference = Difference - AmountDue) 
@@ -439,6 +439,7 @@ server<- function(input, output, session) {
       
     hard <- work
     hard <- work[order(work$Profit, decreasing = TRUE),]
+    hard <- hard[1:3,]
     
     return(hard)
   }
