@@ -1,0 +1,173 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r Setup}
+library(ggplot2)
+library(zoo)
+library(quantmod)
+library(xts)
+library(PerformanceAnalytics)
+library(rugarch)
+library(tidyverse)
+library(dplyr)
+library(pracma)
+library(doParallel)
+library(stringr)
+```
+Run on multiple cores:
+```{r}
+registerDoParallel(cores = detectCores() - 1)
+```
+
+Getting all 500 company names:
+```{r}
+sNp <- readRDS(file = "riskData.rds")
+
+sNp <- sNp %>% 
+  group_by(Name) %>% 
+  distinct(Name) %>% 
+  mutate(Name = gsub("_x|\\.\\d+[A-Za-z]+", "", Name))
+  
+sNp2 <- sNp[!grepl("ADS|AGN|AES|ALXN|ANTM|APC|BBT|BF.B|BHGE|BLL|BRK.B|CBG|CBS|CELG|CERN|COG|COL|CTL|CTXS|CXO|DISCA|DISCK|DPS|DRE|DWDP|ETFC|FBHS|FB|FLIR|GGP|HCN|HRS|INFO|JEC|KORS|KSU|LB|LLL|LUK|MON|MYL|NBL|NLSN|PBCT|PCLN|RHT|RTN|STI|SYMC|TIF|TMK|TSS|UTX|VAR|VIAB|WLTW|WYN|XEC|XLNX|XL", sNp$Name),]
+
+#first50 <- sNp2[row.names(sNp2) %in% 1:50,]
+#sfirst25 <- sNp2[row.names(sNp2) %in% 51:75,]
+#ssecond25 <- sNp2[row.names(sNp2) %in% 76:100,]
+#F101_130 <- sNp2[row.names(sNp2) %in% 101:130,]
+#F131_151 <- sNp2[row.names(sNp2) %in% 131:151,]
+#F152_172 <- sNp2[row.names(sNp2) %in% 152:172,]
+#F173_200 <- sNp2[row.names(sNp2) %in% 173:200,]
+#T201_221 <- sNp2[row.names(sNp2) %in% 201:221,]
+#T222_242 <- sNp2[row.names(sNp2) %in% 222:242,]
+#T243_273 <- sNp2[row.names(sNp2) %in% 243:273,]
+#T274_284 <- sNp2[row.names(sNp2) %in% 274:284,]
+#T285_300 <- sNp2[row.names(sNp2) %in% 285:300,]
+#F301_340 <- sNp2[row.names(sNp2) %in% 301:340,]
+#F341_361 <- sNp2[row.names(sNp2) %in% 341:361,]
+#F362_382 <- sNp2[row.names(sNp2) %in% 362:382,]
+#F383_400 <- sNp2[row.names(sNp2) %in% 383:400,]
+
+#fifth100 <- sNp2[row.names(sNp2) %in% 431:nrow(sNp2),]
+
+companyNames <- sNp2
+companyNames
+```
+ONLY RUN ONCE
+```{r}
+saveRDS(companyNames, "companyNames.rds")
+```
+DO NOT RUN!!!^^^^^^
+
+
+
+```{r}
+companyNames <- readRDS("companyNames.rds")
+```
+
+
+```{r}
+complete_data <- data.frame(matrix(ncol = 4, nrow = 0))
+names = c("Name", "Year", "Value", "Buy.in.Price")
+colnames(complete_data) <- names
+
+#temp <- list(matrix(ncol = 7, nrow = 0))
+#names(temp) <- names
+
+temp <- data.frame(matrix(ncol = 4, nrow = 1))
+colnames(temp) <- names
+
+#temp <- vector(length(names)) |> setNames(names)
+
+for (i in 1:nrow(companyNames)) {
+  
+   name_object <- getSymbols(as.character(companyNames[i,1]) , from = "2011-01-01",to = "2022-12-31", auto.assign = FALSE)
+    
+    name_object <- as.data.frame(name_object)
+    
+    name_object <- name_object %>% 
+      dplyr::rename_with(.cols = 4, ~ "Close") %>% 
+      select(Close)
+    
+    name_object$date <- row.names(name_object)
+    name_xts <- xts(name_object$Close, 
+                    order.by = as.POSIXct(name_object$date))
+  
+for (j in 1:5) {
+  temp$Name <- companyNames[i,1]$Name 
+  print(temp$Name)
+
+    
+    #Setting number of years:
+    years = j
+  
+    #Calculate Daily returns and remove null
+    
+    name_xts <- na.omit(name_xts)
+    return <- CalculateReturns(name_xts)
+    return <- return[-1]
+    return <- na.omit(return)
+    
+    
+    #GARCH model and spec
+    
+    #Setting the spec
+    s <- ugarchspec(mean.model = list(armaOrder = c(0,0)),
+                    variance.model = list(model = "gjrGARCH"),
+                    distribution.model = "sstd")
+    #fitting model
+    m <- ugarchfit(data = return, spec = s)
+    
+    sfinal <- s
+    setfixed(sfinal) <- as.list(coef(m))
+    
+     sim <- ugarchpath(spec = sfinal,
+                      m.sim = 1,
+                      n.sim = 1*252*years,
+                      rseed = 123)
+    
+    #Finding the last closing price of stock from the previous year to be used to calculate
+    num <- last(name_xts)
+    num <- as.data.frame(num)
+    num <- num[1,1]
+    num
+    
+    final_closing_val <- last(num*apply(fitted(sim), 2, "cumsum")+ num)
+    
+    temp$Year <- paste0("Year.", j)
+    print(temp$Year)
+    
+    temp$Value <- final_closing_val 
+    print(temp$Value)
+
+    name_xts_df <- as.data.frame(name_xts)
+    buy_in_price <- last(name_xts_df)
+    
+    temp$Buy.in.Price <- buy_in_price$V1 
+    
+    complete_data <- rbind(complete_data, temp)
+    
+  
+  }#End of nested for
+
+
+     
+    # add row to dataframe
+     complete_data
+     
+  
+}#End of for
+     
+  #Pivoting wider to show years in 1 row
+  complete_data <- complete_data %>% 
+    pivot_wider(names_from = Year, values_from = Value)
+
+
+```
+
+```{r}
+saveRDS(complete_data, "final_forecast_data.rds")
+
+```
