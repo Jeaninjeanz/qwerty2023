@@ -11,6 +11,9 @@ library(tidyverse)
 fundamentalData <- readRDS("~/Desktop/qwerty2023/data/cleaned/FundamentalCompanyRisk.rds")
 historicalData <- readRDS("~/Desktop/qwerty2023/data/cleaned/HistoricalRisk.rds")
 
+#weights 
+hWeight = 0.4
+fWeight = 0.6
 ```
 
 ```{r}
@@ -31,7 +34,7 @@ merged1
 ```
 ```{r}
 merged1 <- merged1 %>% 
-  mutate(finalRisk = (mean + meancat)/2)
+  mutate(finalRisk = (hWeight * mean + fWeight * meancat))
 merged1
 ```
 
